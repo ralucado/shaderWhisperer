@@ -8,5 +8,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="/usr/local/lib/antlr-4.7.1-complete.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/Antlr/antlr-4.7.1-complete.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
