@@ -2,7 +2,7 @@ import sys
 from antlr4 import *
 from build.classes.GLSLLexer import GLSLLexer
 from build.classes.GLSLParser import GLSLParser
-from build.myGLSLListener import *
+from myGLSLListener import *
 
 
 def calls(name, input):
