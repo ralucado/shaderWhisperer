@@ -20,4 +20,7 @@ void main() {
   float f=fract(vtexCoord.x);
   if (isYellowStrip(f)) fragColor=YELLOW;
   else fragColor=RED;
+  for(int i=0; i < 4; ++i){
+	  whatever = fract(whatevs);
+  }
 }
