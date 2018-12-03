@@ -22,5 +22,6 @@ void main() {
   else fragColor=RED;
   for(int i=0; i < 4; ++i){
 	  whatever = fract(whatevs);
+	  fract(whatevs);
   }
 }
