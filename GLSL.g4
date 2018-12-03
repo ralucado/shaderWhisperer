@@ -9,10 +9,10 @@ preprocessor
     ;
 
 version_pre
-    : 'version' integer VERSOIN_PROFILE?
+    : 'version' integer VERSION_PROFILE?
     ;
 
-VERSOIN_PROFILE
+VERSION_PROFILE
     :   'core'
     |   'compatibility'
     |   'es'
@@ -106,12 +106,12 @@ u_int_opaque_type: U_INT_OPAQUE;
 
 expression
     :   primary_expression
-    |   expression INCREAMENT_OP
-    |   INCREAMENT_OP expression
-    |   ADDDIV_OP expression
+    |   expression INCREMENT_OP
+    |   INCREMENT_OP expression
+    |   ADDSUB_OP expression
     |   UNARY_OP expression
     |   expression MULDIV_OP expression
-    |   expression ADDDIV_OP expression
+    |   expression ADDSUB_OP expression
     |   expression SHIFT_OP expression
     |   expression COMPARE_OP expression
     |   expression EQUAL_OP expression
@@ -316,13 +316,13 @@ BASIC_OPAQUE_TYPE:  ('sampler' | 'image')
     ('1D'|'2D'|'3D'|'Cube'|'2DRect'|'1DArray'|'2DArray'|'Buffer'|'2DMS'|'2DMSArray'|'CubeArray');
 
 //����ʽ
-INCREAMENT_OP : '++' | '--';
+INCREMENT_OP : '++' | '--';
 
 UNARY_OP :  '~' | '!';
 
 MULDIV_OP : '*' | '/' | '%';
 
-ADDDIV_OP : '+' | '-';
+ADDSUB_OP : '+' | '-';
 
 SHIFT_OP : '<<' | '>>' ;
 
@@ -338,7 +338,7 @@ ASSIGNMENT_OP: '=';
 
 ARITHMETIC_ASSIGNMENT_OP
     :   MULDIV_OP ASSIGNMENT_OP
-    |   ADDDIV_OP ASSIGNMENT_OP
+    |   ADDSUB_OP ASSIGNMENT_OP
     |   SHIFT_OP ASSIGNMENT_OP
     |   BITWISE_OP ASSIGNMENT_OP
     ;
@@ -360,7 +360,7 @@ fragment
 INTEGER_SUFFIX: 'u' | 'U';
 
 fragment
-EXPONENT : ('e'|'E') ADDDIV_OP? ('0'..'9')+ ;
+EXPONENT : ('e'|'E') ADDSUB_OP? ('0'..'9')+ ;
 
 fragment
 FLOAT_SUFFIX: 'f' | 'F' | 'lf' | 'LF';
