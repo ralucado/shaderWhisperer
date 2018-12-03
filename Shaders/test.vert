@@ -6,11 +6,12 @@ out vec4 frontColor;
 
 uniform mat3 normalMatrix;
 
-int getRandomNumber(){
+int getRandomNumber(int i, vec3 cosa){
   return 4;
 }
 
 void main() {
+  float i;
   frontColor=vec4(normalize(normalMatrix*normal).z);
   for(int i=0; i < 360; ++i){
     vtexCoord=texCoord;
