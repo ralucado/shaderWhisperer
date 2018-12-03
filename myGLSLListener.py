@@ -1,5 +1,6 @@
 # Generated from GLSL.g4 by ANTLR 4.7.1
 from antlr4 import *
+from GLSLParser import GLSLParser
 if __name__ is not None and "." in __name__:
     from .build.classes.GLSLListener import *
     from .Singleton import Result
@@ -8,7 +9,27 @@ else:
     from build.classes.GLSLListener  import *
     from Singleton  import Result
     from Structs import *
-
+    
+class declGLSLListener(GLSLListener):
+    def __init__(self, name):
+        self.name =name
+        self.r = Result()
+    
+    def enterFunc_decl_member(self, ctx:GLSLParser.Func_decl_memberContext):
+        token = ctx.IDENTIFIER().getSymbol()
+        if(token.text == self.name):
+            self.r.addValue(srcPoint(token.line, token.column)) 
+        pass
+    
+    # Enter a parse tree produced by GLSLParser#simple_declaration.
+    def enterSimple_declarator(self, ctx:GLSLParser.Simple_declaratorContext):
+        #simple_declarator --> left_value
+        token = ctx.left_value().IDENTIFIER().getSymbol()
+        if(token.text == self.name):
+            self.r.addValue(srcPoint(token.line, token.column)) 
+        pass
+    
+    
 class callGLSLListener(GLSLListener):
     def __init__(self, name):
         self.name = name

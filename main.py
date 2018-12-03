@@ -9,13 +9,16 @@ def testCalls(sw):
     print("FS -- isYellowStrip:", sw.calls("isYellowStrip", "FS"))
     print("FS -- fract:", sw.calls("fract", "FS"))
     print("VS -- normalize:", sw.calls("normalize", "VS"))
-    
+
+def testDecls(sw):
+    print("frontColor --", sw.declarations("frontColor", "VS")) #should be one
+    print("i", sw.declarations("i", "VS") )#should be many
     
 def main():
     sw = shaderWhisperer()
     sw.addSource("FS", "Shaders/test.frag")
     sw.addSource("VS", "Shaders/test.vert")
-    testSentences(sw)
+    testDecls(sw)
     
 if __name__ == '__main__':
     main()
