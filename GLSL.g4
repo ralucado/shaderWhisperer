@@ -170,11 +170,11 @@ statement
 simple_statement
     :   function_definition_statement
     |   basic_statement SEMICOLON
-    |   selection_statement
-    |   switch_statement
-    |   case_label
-    |   iteration_statement
-    |   jump_statement
+    |   selection_statement //if
+    |   switch_statement //switch
+    |   case_label //case, default
+    |   iteration_statement //while, do, for
+    |   jump_statement //continue, break, return
     ;
 
 compoud_statement:  LEFT_BRACE statement_list RIGHT_BRACE;
@@ -215,14 +215,14 @@ switch_statement: SWITCH LEFT_PAREN expression RIGHT_PAREN LEFT_BRACE statement_
 
 case_label
     : CASE expression COLON
-    | DEFUALT COLON
+    | DEFAULT COLON
     ;
 
 //ѭ�����
 iteration_statement
     :   WHILE LEFT_PAREN expression RIGHT_PAREN statement
     |   DO statement WHILE LEFT_PAREN expression RIGHT_PAREN SEMICOLON
-    |   FOR LEFT_PAREN for_init_statement for_cond_statement for_rest_statement RIGHT_PAREN
+    |   FOR LEFT_PAREN for_init_statement for_cond_statement for_rest_statement RIGHT_PAREN statement
     ;
 
 for_init_statement
@@ -262,7 +262,7 @@ RETURN: 'return';
 
 SWITCH: 'switch';
 CASE: 'case';
-DEFUALT: 'defualt';
+DEFAULT: 'default';
 
 LEFT_PAREN: '(';
 RIGHT_PAREN: ')';
