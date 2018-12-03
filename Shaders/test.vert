@@ -1,8 +1,10 @@
 #version 330 core
 
 layout (location = 0) in vec3 vertex;
+layout (location = 1) in float whatevs;
 
 out vec4 frontColor;
+out int speed;
 
 uniform mat3 normalMatrix;
 
@@ -18,6 +20,8 @@ void main() {
   }
   while(frontColor != myColor){
     if(frontColor == normalize(normalMatrix*normal)){
+      frontColor += vec3(1,1,1);
+      frontColor.b += 2;
       continue;
     }
     else{
@@ -27,6 +31,7 @@ void main() {
   switch(frontColor){
     case vec3(1,1,1):
     getRandomNumber();
+    frontColor();
       break;
     case myColor:
     default:
