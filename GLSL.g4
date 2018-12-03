@@ -149,7 +149,7 @@ function_definition
         RIGHT_BRACE
     ;
 
-function_declaration: return_Type function_name LEFT_PAREN (func_decl_member  (COMMA func_decl_member)* )?RIGHT_PAREN;
+function_declaration: return_Type function_name LEFT_PAREN (func_decl_member (COMMA func_decl_member)* )? RIGHT_PAREN;
 
 function_call: function_name LEFT_PAREN (expression (COMMA expression)*)? RIGHT_PAREN;
 
