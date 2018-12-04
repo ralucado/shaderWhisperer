@@ -1,3 +1,4 @@
+import sys
 from antlr4 import *
 from build.classes.GLSLLexer import GLSLLexer
 from build.classes.GLSLParser import GLSLParser
@@ -10,7 +11,14 @@ class shaderWhisperer():
 
     #TODO: handle fileName not defined (try to define automatically on call?)        
     def __callListener(self, listener, filename, name=None):
-        file = FileStream(self._sources[filename])
+        try:
+            file = FileStream(self._sources[filename])
+        except FileNotFoundError:
+            sys.stderr.write("FileNotFoundError: No such file or directory: "+str(self._sources[filename])+"\n")
+            return [srcPoint(-1,-1)]
+        except KeyError:
+            sys.stderr.write("KeyError: Not defined source: "+str(filename)+"\n")
+            return [srcPoint(-1,-1)]
         lexer = GLSLLexer(file)
         stream = CommonTokenStream(lexer)
         parser = GLSLParser(stream)
@@ -20,19 +28,28 @@ class shaderWhisperer():
         walker.walk(printer, tree)
         return printer.result
     
-    def __storage(self, file, type):
+    def __uses(self, file, name):
+        allInstances = self.__callListener(usesGLSLListener, file, name)
+        decls = self.declarations(name, file)
+        assigs = self.assignments(name, file)
+        return [x for x in [y for y in allInstances if y not in decls] if x not in assigs]
+        
+    
+    def __storage(self, file, storage):
         #ins es [(name, type, srcPos), ...]
-        ins = self.__callListener(storageGLSLListener, file, type)
+        ins = self.__callListener(storageGLSLListener, file, storage)
         res = []
-        #TODO: check usages
         for (name, type, pos) in ins:
-            uses = self.__callListener(usesGLSLListener, file, name)
-            used = len(uses) > 1 #hack. uses contains the declaration so we should subtract one
-            res.append((name, type, pos, used))
-            
+            #for inVars we search for usage, outVars we search for assignemnt
+            usesOrAssigns = self.uses(name, file) if storage == "in" else self.assignments(name, file)
+            usedOrAssigned = len(usesOrAssigns) > 0
+            res.append((name, type, pos, usedOrAssigned))
         return res
         
     def addSource(self, name, path):
+        #TODO: when working with glsl & Cpp store
+        #type of file in addition to path
+        #and call the appropriate listener for each language
         self._sources[name] = path;
      
     #Para cada variable in, se proporciona una tupla que indica: (id, type, pos, used)   
@@ -43,7 +60,7 @@ class shaderWhisperer():
         return self.__storage(file, "in")   
     
     def uses(self, name, file):
-        return self.__callListener(usesGLSLListener, file, name)
+        return self.__uses(file, name)
         
     def assignments(self, name, file):
         return self.__callListener(assigGLSLListener, file, name)

@@ -32,17 +32,19 @@ class storageGLSLListener(GLSLListener):
                 
             if(self.pos != None):
                 #we have found a storage qualifier that matches
-                #store type and name
+                #store type
                 self.type = ctx.type_specifier().type_specifier_nonarray().getText()
-                
                 #is it array? buf. get ALL the array contexts to know the type
+                #get directly the text (with the expression)?
                 arrayCtxs = ctx.type_specifier().getTypedRuleContexts(GLSLParser.Array_specifierContext)
                 for ctxArraySpecifier in arrayCtxs:
                     self.type += "[]"
                 
+                #store the variable name
                 declaratorCtxs = ctx.getTypedRuleContexts(GLSLParser.Simple_declaratorContext)
                 for ctxDeclarator in declaratorCtxs:
                     self.result.append((ctxDeclarator.getText(), self.type, self.pos))
+                    
                 self.pos = None
                 self.type = None     
         pass
