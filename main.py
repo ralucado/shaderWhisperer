@@ -24,6 +24,8 @@ def testAssig(sw):
 def testUses(sw):
     print("\n --- uses testing\n")
     print("VS -- frontColor:   ", sw.uses("frontColor", "VS"))
+    print("VS -- speed:   ", sw.uses("speed", "VS"))
+    print("VS -- vertex:   ", sw.uses("vertex", "VS"))
     
 def testIns(sw):
     print("\n --- inVars testing\n")
@@ -36,6 +38,7 @@ def testOuts(sw):
 def main():
     sw = shaderWhisperer()
     sw.addSource("FS", "Shaders/test.frag")
+    #sw.addSource("VS", "Shaders/noexiste")
     sw.addSource("VS", "Shaders/test.vert")
     testSentences(sw)
     testCalls(sw)

@@ -18,7 +18,7 @@ void main() {
   for(int i=0; i < 360; ++i){
     vtexCoord=texCoord;
   }
-  while(frontColor != myColor){
+  while(frontColor != myColor && speed[][] > 10 && vertex.xyz != frontColor.rgb){
     if(frontColor == normalize(normalMatrix*normal)){
       frontColor += vec3(1,1,1);
       frontColor.b += 2;
@@ -26,6 +26,7 @@ void main() {
     }
     else{
       ++myColor.r;
+      velocity = speed;
     }
   }
   switch(frontColor){

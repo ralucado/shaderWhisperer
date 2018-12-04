@@ -8,6 +8,11 @@ class srcPoint():
     
     def __repr__(self):
         return str(self)
+    
+    def __eq__(self, other):
+        if(isinstance(other, srcPoint)):
+            return (self.line == other.line and self.col == other.col)
+        return False
 
 class srcInterval():   
     def __init__(self,x,y):
@@ -16,4 +21,9 @@ class srcInterval():
     
     def __str__(self):
         return str(self.start)+".."+str(self.end)
+    
+    def __eq__(self, other):
+        if(isinstance(other, srcInterval)):
+            return (self.x == other.x and self.y == other.y)
+        return False
     #TODO: def len?
