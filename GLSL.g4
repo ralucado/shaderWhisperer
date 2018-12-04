@@ -64,7 +64,9 @@ float_num: FLOAT_NUM;
 
 bool_num : 'true' | 'false';
 
-//Ԫ��������
+//vec3
+//int[64]
+//int[][][]
 type_specifier: type_specifier_nonarray array_specifier*;
 
 type_specifier_nonarray
