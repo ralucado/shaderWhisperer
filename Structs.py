@@ -1,5 +1,5 @@
 class srcPoint():
-    def __init__(self, l, c):
+    def __init__(self, l=-1, c=-1):
         self.line = l
         self.col = c 
         
