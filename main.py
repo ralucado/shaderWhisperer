@@ -26,20 +26,22 @@ def testUses(sw):
     print("VS -- frontColor:   ", sw.uses("frontColor", "VS"))
     
 def testIns(sw):
-    print(sw.inVars("VS"))
+    print("\n --- inVars testing\n")
+    print("VS --- in \t:", sw.inVars("VS"))
     
 def testOuts(sw):
-    print(sw.outVars("VS"))
+    print("\n --- outVars testing\n")
+    print("VS --- out \t:", sw.outVars("VS"))
     
 def main():
     sw = shaderWhisperer()
     sw.addSource("FS", "Shaders/test.frag")
     sw.addSource("VS", "Shaders/test.vert")
-    #testSentences(sw)
-    #testCalls(sw)
-    #testDecls(sw)
-    #testAssig(sw)
-    #testUses(sw)
+    testSentences(sw)
+    testCalls(sw)
+    testDecls(sw)
+    testAssig(sw)
+    testUses(sw)
     testIns(sw)
     testOuts(sw)
     

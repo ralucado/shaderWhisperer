@@ -23,8 +23,14 @@ class shaderWhisperer():
     def __storage(self, file, type):
         #ins es [(name, type, srcPos), ...]
         ins = self.__callListener(storageGLSLListener, file, type)
+        res = []
         #TODO: check usages
-        return ins
+        for (name, type, pos) in ins:
+            uses = self.__callListener(usesGLSLListener, file, name)
+            used = len(uses) > 1 #hack. uses contains the declaration so we should subtract one
+            res.append((name, type, pos, used))
+            
+        return res
         
     def addSource(self, name, path):
         self._sources[name] = path;
