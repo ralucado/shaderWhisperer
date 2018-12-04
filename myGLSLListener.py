@@ -8,14 +8,49 @@ else:
     from build.classes.GLSLListener  import *
     from Structs import *
 
-class insGLSLListener(GLSLListener):
-    def __init__(self):
-        self.r = []
-    
+#TODO: change names that refer to tokens to the actual
+# GLSLParser.token type and check them
 
+class storageGLSLListener(GLSLListener):
+    def __init__(self, name):
+        self.name = name #in, out
+        self.varName = None
+        self.pos = None
+        self.type = None
+        self.result = []
+        
+    def enterSimple_declaration(self, ctx:GLSLParser.Simple_declarationContext):
+        #does the declaration have "out" or "in" storage qualifiers?
+        if(ctx.type_qualifier() != None):
+            ctxTypeQualifier = ctx.type_qualifier()
+            storageCtxs = ctxTypeQualifier.getTypedRuleContexts(GLSLParser.Storage_qualifierContext)
+            for ctxStorageQualifier in storageCtxs:
+                token = ctxStorageQualifier.getChild(0).getSymbol()
+                if(token.text == self.name):
+                    self.pos = srcPoint(token.line, token.column)
+                    break
+                
+            if(self.pos != None):
+                #we have found a storage qualifier that matches
+                #store type and name
+                self.type = ctx.type_specifier().type_specifier_nonarray().getText()
+                
+                #is it array? buf. get ALL the array contexts to know the type
+                arrayCtxs = ctx.type_specifier().getTypedRuleContexts(GLSLParser.Array_specifierContext)
+                for ctxArraySpecifier in arrayCtxs:
+                    self.type += "[]"
+                
+                declaratorCtxs = ctx.getTypedRuleContexts(GLSLParser.Simple_declaratorContext)
+                for ctxDeclarator in declaratorCtxs:
+                    self.result.append((ctxDeclarator.getText(), self.type, self.pos))
+                self.pos = None
+                self.type = None     
+        pass
+    
+    
 class usesGLSLListener(GLSLListener):
     def __init__(self, name):
-        self.name = name
+        self.name = name #var name
         self.result = []
         
     def enterLeft_value(self, ctx:GLSLParser.Left_valueContext):
@@ -27,7 +62,7 @@ class usesGLSLListener(GLSLListener):
     
 class assigGLSLListener(GLSLListener):
     def __init__(self, name):
-        self.name = name
+        self.name = name #var name
         self.result = []
         
     def enterAssignment_statement(self, ctx:GLSLParser.Assignment_statementContext):
@@ -40,7 +75,7 @@ class assigGLSLListener(GLSLListener):
     
 class declGLSLListener(GLSLListener):
     def __init__(self, name):
-        self.name = name
+        self.name = name #var name
         self.result = []
     
     def enterFunc_decl_member(self, ctx:GLSLParser.Func_decl_memberContext):
@@ -120,7 +155,7 @@ class sentenceGLSLListener(GLSLListener):
     
     #continue, break, return
     def enterJump_statement(self, ctx:GLSLParser.Jump_statementContext):
-        token = None
+        token = None        
         if(self.name == "continue" and ctx.CONTINUE() != None):
             token = ctx.CONTINUE().getSymbol()
         elif(self.name == "break" and ctx.BREAK() != None):
@@ -128,6 +163,6 @@ class sentenceGLSLListener(GLSLListener):
         elif(self.name == "return" and ctx.RETURN() != None):
             token = ctx.RETURN().getSymbol()
         if(token != None):
-            self.result.append(srcPoint(token.line, token.column)) 
+            self.result.append(srcPoint(token.line, token.column))
         pass
     

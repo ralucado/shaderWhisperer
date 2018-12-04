@@ -19,16 +19,22 @@ class shaderWhisperer():
         walker = ParseTreeWalker()
         walker.walk(printer, tree)
         return printer.result
-        
+    
+    def __storage(self, file, type):
+        #ins es [(name, type, srcPos), ...]
+        ins = self.__callListener(storageGLSLListener, file, type)
+        #TODO: check usages
+        return ins
         
     def addSource(self, name, path):
         self._sources[name] = path;
      
     #Para cada variable in, se proporciona una tupla que indica: (id, type, pos, used)   
+    def outVars(self, file):
+        return self.__storage(file, "out")
+        
     def inVars(self, file):
-        #ins es [(name, type, srcPos), ...]
-        ins = self.__callListener(insGLSLListener, filename)
-        return ins
+        return self.__storage(file, "in")   
     
     def uses(self, name, file):
         return self.__callListener(usesGLSLListener, file, name)
