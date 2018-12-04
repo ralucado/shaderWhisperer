@@ -4,7 +4,7 @@ layout (location = 0) in vec3 vertex;
 layout (location = 1) in float whatevs;
 
 out vec4 frontColor;
-out int speed;
+in out int[][64 + 2] speed, velocity;
 
 uniform mat3 normalMatrix;
 
