@@ -8,10 +8,49 @@ else:
     from build.classes.GLSLListener  import *
     from Structs import *
 
+
+
+class declGLSLListener(GLSLListener):
+    def __init__(self, name):
+        self.name = name #var name
+        self.result = []
+        
+    def _getType(self, ctx:GLSLParser.Type_specifierContext):
+        type = ctx.type_specifier_nonarray().getText()
+        #is it array? buf. get ALL the array contexts to know the type
+        #get directly the text (with the expression)?
+        arrayCtxs = ctx.getTypedRuleContexts(GLSLParser.Array_specifierContext)
+        for ctxArraySpecifier in arrayCtxs:
+            type += "[]"
+            
+        return type
+        
+    def enterFunc_decl_member(self, ctx:GLSLParser.Func_decl_memberContext):
+        if(ctx.IDENTIFIER() != None):
+            token = ctx.IDENTIFIER().getSymbol()
+            if(token.text == self.name):
+                type = self._getType(ctx.type_specifier())
+                self.result.append((type, srcPoint(token.line, token.column))) 
+        pass
+    
+    # Enter a parse tree produced by GLSLParser#simple_declaration.
+    def enterSimple_declaration(self, ctx:GLSLParser.Simple_declarationContext):
+        #simple_declarator --> left_value
+        #store the variable name
+         
+        declaratorCtxs = ctx.getTypedRuleContexts(GLSLParser.Simple_declaratorContext)
+        for ctxDeclarator in declaratorCtxs:
+            if(ctxDeclarator.getText() == self.name):
+                token = ctxDeclarator.getChild(0).getChild(0).getSymbol()
+                type = self._getType(ctx.type_specifier())
+                self.result.append((type,srcPoint(token.line, token.column)))
+        pass
+    
+    
+
+class storageGLSLListener(declGLSLListener):
 #TODO: change names that refer to tokens to the actual
 # GLSLParser.token type and check them
-
-class storageGLSLListener(GLSLListener):
     def __init__(self, name):
         self.name = name #in, out
         self.varName = None
@@ -32,13 +71,8 @@ class storageGLSLListener(GLSLListener):
                 
             if(self.pos != None):
                 #we have found a storage qualifier that matches
-                #store type
-                self.type = ctx.type_specifier().type_specifier_nonarray().getText()
-                #is it array? buf. get ALL the array contexts to know the type
-                #get directly the text (with the expression)?
-                arrayCtxs = ctx.type_specifier().getTypedRuleContexts(GLSLParser.Array_specifierContext)
-                for ctxArraySpecifier in arrayCtxs:
-                    self.type += "[]"
+                #store type using parent class getType function
+                self.type = self._getType(ctx.type_specifier())
                 
                 #store the variable name
                 declaratorCtxs = ctx.getTypedRuleContexts(GLSLParser.Simple_declaratorContext)
@@ -47,6 +81,10 @@ class storageGLSLListener(GLSLListener):
                     
                 self.pos = None
                 self.type = None     
+        pass
+    
+    #override parent listener
+    def enterFunc_decl_member(self, ctx:GLSLParser.Func_decl_memberContext):
         pass
     
     
@@ -75,28 +113,7 @@ class assigGLSLListener(GLSLListener):
                 self.result.append(srcPoint(token.line, token.column)) 
         pass
     
-class declGLSLListener(GLSLListener):
-    def __init__(self, name):
-        self.name = name #var name
-        self.result = []
-    
-    def enterFunc_decl_member(self, ctx:GLSLParser.Func_decl_memberContext):
-        if(ctx.IDENTIFIER() != None):
-            token = ctx.IDENTIFIER().getSymbol()
-            if(token.text == self.name):
-                self.result.append(srcPoint(token.line, token.column)) 
-        pass
-    
-    # Enter a parse tree produced by GLSLParser#simple_declaration.
-    def enterSimple_declarator(self, ctx:GLSLParser.Simple_declaratorContext):
-        #simple_declarator --> left_value
-        if(ctx.left_value().IDENTIFIER() != None):
-            token = ctx.left_value().IDENTIFIER().getSymbol()
-            if(token.text == self.name):
-                self.result.append(srcPoint(token.line, token.column)) 
-        pass
-    
-    
+
 class callGLSLListener(GLSLListener):
     def __init__(self, name):
         self.name = name
