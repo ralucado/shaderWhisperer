@@ -3,7 +3,7 @@ from shaderWhisperer import shaderWhisperer
 #TODO: add testing class
 def testSentences(sw):
     print("\n --- sentences testing\n")
-    for s in ["switch", "case", "while", "do", "for", "if", "break", "cont.", "return"]:
+    for s in ["switch", "case", "while", "do", "for", "if", "break", "continue", "return"]:
         print(s, "\t:", sw.sentences(s, "VS"))
             
 def testCalls(sw):
@@ -20,12 +20,15 @@ def testDecls(sw):
 def testAssig(sw):
     print("\n --- assig testing\n")
     print("VS -- frontColor:   ", sw.assignments("frontColor", "VS"))
+    print("VS -- i:   ", sw.assignments("i", "VS"))
     
 def testUses(sw):
     print("\n --- uses testing\n")
     print("VS -- frontColor:   ", sw.uses("frontColor", "VS"))
     print("VS -- speed:   ", sw.uses("speed", "VS"))
     print("VS -- vertex:   ", sw.uses("vertex", "VS"))
+    print("VS -- i:   ", sw.uses("i", "VS"))
+    print("VS -- normalMatrix:   ", sw.uses("normalMatrix", "VS"))
     
 def testIns(sw):
     print("\n --- inVars testing\n")
