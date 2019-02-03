@@ -38,7 +38,7 @@ void main() {
     default:
       break;
   }
-  int i = 99;
+  int i = 99; //decl and assig are ok
   do{
     --i;
   }while(i != 0);
