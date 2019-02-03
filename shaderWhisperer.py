@@ -32,7 +32,7 @@ class shaderWhisperer():
         allInstances = self.__callListener(usesGLSLListener, file, name)
         decls = self.declarations(name, file)
         assigs = self.assignments(name, file)
-        return [x for x in [y for y in allInstances if y not in decls] if x not in assigs]
+        return [x for x in [y for y in allInstances if y not in [item[1] for item in decls]] if x not in assigs]
         
     
     def __storage(self, file, storage):
