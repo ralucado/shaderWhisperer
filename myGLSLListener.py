@@ -1,4 +1,3 @@
-# Generated from GLSL.g4 by ANTLR 4.7.1
 from antlr4 import *
 from GLSLParser import GLSLParser
 if __name__ is not None and "." in __name__:
@@ -140,17 +139,6 @@ class sentenceGLSLListener(GLSLListener):
                 self.result.append(srcPoint(token.line, token.column)) 
         pass
     
-    # case, default
-    def enterCase_label(self, ctx:GLSLParser.Case_labelContext):
-        token = None
-        if(self.name == "case" and ctx.CASE() != None):
-            token = ctx.CASE().getSymbol()
-        elif(self.name == "default" and ctx.DEFAULT() != None):
-            token = ctx.DEFAULT().getSymbol()
-        if(token != None):
-            self.result.append(srcPoint(token.line, token.column)) 
-        pass
-    
     #if
     def enterSelection_statement(self, ctx:GLSLParser.Selection_statementContext):
         if(self.name == "if"  and ctx.IF() != None):
@@ -159,29 +147,155 @@ class sentenceGLSLListener(GLSLListener):
                 self.result.append(srcPoint(token.line, token.column)) 
         pass
     
-    #while, do, for    
-    def enterIteration_statement(self, ctx:GLSLParser.Iteration_statementContext):
-        token = None
-        if(self.name == "while" and ctx.WHILE() != None):
+    #while, do, for 
+     # Enter a parse tree produced by GLSLParser#case.
+    def enterCase(self, ctx:GLSLParser.CaseContext):
+        if self.name == "case":
+            token = ctx.CASE().getSymbol()
+            if(token != None):
+                self.result.append(srcPoint(token.line, token.column)) 
+        pass
+
+    # Enter a parse tree produced by GLSLParser#default.
+    def enterDefault(self, ctx:GLSLParser.DefaultContext):
+        if self.name == "default":
+            token = ctx.DEFAULT().getSymbol()
+            if(token != None):
+                self.result.append(srcPoint(token.line, token.column)) 
+        pass
+
+    # Enter a parse tree produced by GLSLParser#while.
+    def enterWhile(self, ctx:GLSLParser.WhileContext):
+        if self.name == "while":
             token = ctx.WHILE().getSymbol()
-        elif(self.name == "for" and ctx.FOR() != None):
-            token = ctx.FOR().getSymbol()
-        elif(self.name == "do"  and ctx.DO() != None):
+            if(token != None):
+                self.result.append(srcPoint(token.line, token.column)) 
+        pass
+
+     # Enter a parse tree produced by GLSLParser#do.
+    def enterDo(self, ctx:GLSLParser.DoContext):
+        if self.name == "do":
             token = ctx.DO().getSymbol()
-        if(token != None):
-            self.result.append(srcPoint(token.line, token.column)) 
+            if(token != None):
+                self.result.append(srcPoint(token.line, token.column)) 
+        pass
+
+ # Enter a parse tree produced by GLSLParser#for.
+    def enterFor(self, ctx:GLSLParser.ForContext):
+        if self.name == "for":
+            token = ctx.FOR().getSymbol()
+            if(token != None):
+                self.result.append(srcPoint(token.line, token.column)) 
         pass
     
-    #continue, break, return
-    def enterJump_statement(self, ctx:GLSLParser.Jump_statementContext):
-        token = None        
-        if(self.name == "continue" and ctx.CONTINUE() != None):
+    def enterContinue(self, ctx:GLSLParser.ContinueContext):     
+        if self.name == "continue":
             token = ctx.CONTINUE().getSymbol()
-        elif(self.name == "break" and ctx.BREAK() != None):
+            if(token != None):
+                self.result.append(srcPoint(token.line, token.column)) 
+        pass
+
+    # Enter a parse tree produced by GLSLParser#break.
+    def enterBreak(self, ctx:GLSLParser.BreakContext):     
+        if self.name == "break":
             token = ctx.BREAK().getSymbol()
-        elif(self.name == "return" and ctx.RETURN() != None):
+            if(token != None):
+                self.result.append(srcPoint(token.line, token.column)) 
+        pass
+
+
+    # Enter a parse tree produced by GLSLParser#return.
+    def enterReturn(self, ctx:GLSLParser.ReturnContext):     
+        if self.name == "return":
             token = ctx.RETURN().getSymbol()
+            if(token != None):
+                self.result.append(srcPoint(token.line, token.column)) 
+        pass
+
+    
+class expressionGLSLListener(GLSLListener):
+    def __init__(self, name):
+        self.name = name #var name
+        self.result = []
+        self.tabstack = []
+            
+       # switch
+    def enterSwitch_statement(self, ctx:GLSLParser.Switch_statementContext):
+        token = ctx.SWITCH().getSymbol()
         if(token != None):
-            self.result.append(srcPoint(token.line, token.column))
+            print(''.join(self.tabstack),"return", token.line, token.column)
         pass
     
+    #if
+    def enterSelection_statement(self, ctx:GLSLParser.Selection_statementContext):
+        token = ctx.IF().getSymbol()
+        if(token != None):
+            print(''.join(self.tabstack),"if", token.line, token.column)
+        pass
+    
+    #while, do, for 
+     # Enter a parse tree produced by GLSLParser#case.
+    def enterCase(self, ctx:GLSLParser.CaseContext):
+        token = ctx.CASE().getSymbol()
+        if(token != None):
+            print(''.join(self.tabstack),"case", token.line, token.column)
+        pass
+
+    # Enter a parse tree produced by GLSLParser#default.
+    def enterDefault(self, ctx:GLSLParser.DefaultContext):
+        token = ctx.DEFAULT().getSymbol()
+        if(token != None):
+            print(''.join(self.tabstack),"default", token.line, token.column)
+        pass
+
+    # Enter a parse tree produced by GLSLParser#while.
+    def enterWhile(self, ctx:GLSLParser.WhileContext):
+        token = ctx.WHILE().getSymbol()
+        if(token != None):
+            print(''.join(self.tabstack),"while", token.line, token.column)
+        pass
+
+     # Enter a parse tree produced by GLSLParser#do.
+    def enterDo(self, ctx:GLSLParser.DoContext):
+        token = ctx.DO().getSymbol()
+        if(token != None):
+            print(''.join(self.tabstack),"do", token.line, token.column)
+        pass
+
+ # Enter a parse tree produced by GLSLParser#for.
+    def enterFor(self, ctx:GLSLParser.ForContext):
+        token = ctx.FOR().getSymbol()
+        if(token != None):
+            print(''.join(self.tabstack),"for", token.line, token.column)
+        pass
+    
+    def enterContinue(self, ctx:GLSLParser.ContinueContext):     
+        token = ctx.CONTINUE().getSymbol()
+        if(token != None):
+            print(''.join(self.tabstack),"continue", token.line, token.column)
+        pass
+
+    # Enter a parse tree produced by GLSLParser#break.
+    def enterBreak(self, ctx:GLSLParser.BreakContext):     
+        token = ctx.BREAK().getSymbol()
+        if(token != None):
+            print(''.join(self.tabstack),"break", token.line, token.column)
+        pass
+
+
+    # Enter a parse tree produced by GLSLParser#return.
+    def enterReturn(self, ctx:GLSLParser.ReturnContext):     
+        token = ctx.RETURN().getSymbol()
+        if(token != None):
+            print(''.join(self.tabstack),"return", token.line, token.column)
+        pass
+    
+    def enterStatement_list(self, ctx:GLSLParser.Statement_listContext):
+        print(''.join(self.tabstack),"{")
+        self.tabstack.append("    ")
+        pass
+    
+    def exitStatement_list(self, ctx:GLSLParser.Statement_listContext):
+        del self.tabstack[-1]
+        print(''.join(self.tabstack),"}")
+        pass

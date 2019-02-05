@@ -4,13 +4,16 @@ from build.classes.GLSLLexer import GLSLLexer
 from build.classes.GLSLParser import GLSLParser
 from Structs import *
 from myGLSLListener import *
+from myGLSLVisitor import *
+from _overlapped import NULL
 
 class shaderWhisperer():
     def __init__(self):
         self._sources = {}
 
+    
     #TODO: handle fileName not defined (try to define automatically on call?)        
-    def __callListener(self, listener, filename, name=None):
+    def __getTree(self, filename):
         try:
             file = FileStream(self._sources[filename])
         except FileNotFoundError:
@@ -23,10 +26,29 @@ class shaderWhisperer():
         stream = CommonTokenStream(lexer)
         parser = GLSLParser(stream)
         tree = parser.prog()
+        return tree
+    
+    def __callListener(self, listener, filename, name=None):
+        tree = self.__getTree(filename)
         printer =  listener(name) if (name != None) else listener()
         walker = ParseTreeWalker()
         walker.walk(printer, tree)
         return printer.result
+    
+    def __callVisitor(self, filename, name=None):
+        tree = self.__getTree(filename)
+        visitor = funcDefVisitor()
+        functions = visitor.visit(tree)
+        mainCtx = None
+        for (foo, st_list) in functions:
+            if foo == "main":
+                mainCtx = st_list
+        if mainCtx is None:
+            sys.stderr.write("Error: No main function: "+str(self._sources[filename])+"\n")
+            return NULL
+        
+        visitor = statementVisitor()
+        return mainCtx.accept(visitor)
     
     def __uses(self, file, name):
         allInstances = self.__callListener(usesGLSLListener, file, name)
@@ -73,6 +95,13 @@ class shaderWhisperer():
     
     def sentences(self, name, file):
         return self.__callListener(sentenceGLSLListener, file, name)
+    
+    def expressions(self, name, file):
+        return self.__callListener(expressionGLSLListener, file, name)
+    
+    def tryVisitor(self, name, file):
+        return self.__callVisitor(file, name)
+    
         
     
     

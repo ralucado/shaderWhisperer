@@ -5,6 +5,14 @@ def testSentences(sw):
     print("\n --- sentences testing\n")
     for s in ["switch", "case", "while", "do", "for", "if", "break", "continue", "return"]:
         print(s, "\t:", sw.sentences(s, "VS"))
+        
+def testExpressions(sw):
+    print("\n --- expression testing\n")
+    sw.expressions("", "VS")
+    
+def testVisitor(sw):
+    print("\n --- visitor testing\n")
+    print(" -> ", sw.tryVisitor("", "VS"))
             
 def testCalls(sw):
     print("\n --- call testing\n")
@@ -43,13 +51,15 @@ def main():
     sw.addSource("FS", "Shaders/test.frag")
     #sw.addSource("VS", "Shaders/noexiste")
     sw.addSource("VS", "Shaders/test.vert")
-    testSentences(sw)
-    testCalls(sw)
-    testDecls(sw)
-    testAssig(sw)
-    testUses(sw)
-    testIns(sw)
-    testOuts(sw)
+    #testSentences(sw)
+    #testCalls(sw)
+    #testDecls(sw)
+    #testAssig(sw)
+    #testUses(sw)
+    #testIns(sw)
+    #testOuts(sw)
+    #testExpressions(sw)
+    testVisitor(sw)
     
 if __name__ == '__main__':
     main()

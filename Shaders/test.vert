@@ -24,6 +24,9 @@ void main() {
       frontColor.b += 2;
       continue;
     }
+    else if(1 == 1){
+        frontColor.b += 3;
+    }
     else{
       ++myColor.r;
       velocity = speed;

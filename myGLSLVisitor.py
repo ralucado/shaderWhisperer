@@ -1,318 +1,190 @@
-# Generated from GLSL.g4 by ANTLR 4.7.1
 from antlr4 import *
+from GLSLParser import GLSLParser
 if __name__ is not None and "." in __name__:
     from .build.classes.GLSLVisitor import *
+    from .Structs import *
 else:
-    from build.classes.GLSLVisitor import *
-
-# This class defines a complete generic visitor for a parse tree produced by GLSLParser.
-
-class GLSLVisitor(ParseTreeVisitor):
-
-    # Visit a parse tree produced by GLSLParser#prog.
-    def visitProg(self, ctx:GLSLParser.ProgContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by GLSLParser#preprocessor.
-    def visitPreprocessor(self, ctx:GLSLParser.PreprocessorContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by GLSLParser#version_pre.
-    def visitVersion_pre(self, ctx:GLSLParser.Version_preContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by GLSLParser#type_qualifier.
-    def visitType_qualifier(self, ctx:GLSLParser.Type_qualifierContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by GLSLParser#layout_qualifier.
-    def visitLayout_qualifier(self, ctx:GLSLParser.Layout_qualifierContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by GLSLParser#layout_qualifier_id.
-    def visitLayout_qualifier_id(self, ctx:GLSLParser.Layout_qualifier_idContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by GLSLParser#storage_qualifier.
-    def visitStorage_qualifier(self, ctx:GLSLParser.Storage_qualifierContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by GLSLParser#precision_qualifier.
-    def visitPrecision_qualifier(self, ctx:GLSLParser.Precision_qualifierContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by GLSLParser#interpolation_qualifier.
-    def visitInterpolation_qualifier(self, ctx:GLSLParser.Interpolation_qualifierContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by GLSLParser#invariant_qualifier.
-    def visitInvariant_qualifier(self, ctx:GLSLParser.Invariant_qualifierContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by GLSLParser#precise_qualifier.
-    def visitPrecise_qualifier(self, ctx:GLSLParser.Precise_qualifierContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by GLSLParser#integer.
-    def visitInteger(self, ctx:GLSLParser.IntegerContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by GLSLParser#float_num.
-    def visitFloat_num(self, ctx:GLSLParser.Float_numContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by GLSLParser#bool_num.
-    def visitBool_num(self, ctx:GLSLParser.Bool_numContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by GLSLParser#type_specifier.
-    def visitType_specifier(self, ctx:GLSLParser.Type_specifierContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by GLSLParser#type_specifier_nonarray.
-    def visitType_specifier_nonarray(self, ctx:GLSLParser.Type_specifier_nonarrayContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by GLSLParser#array_specifier.
-    def visitArray_specifier(self, ctx:GLSLParser.Array_specifierContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by GLSLParser#struct_specifier.
-    def visitStruct_specifier(self, ctx:GLSLParser.Struct_specifierContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by GLSLParser#basic_type.
-    def visitBasic_type(self, ctx:GLSLParser.Basic_typeContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by GLSLParser#void_type.
-    def visitVoid_type(self, ctx:GLSLParser.Void_typeContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by GLSLParser#scala_type.
-    def visitScala_type(self, ctx:GLSLParser.Scala_typeContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by GLSLParser#vector_type.
-    def visitVector_type(self, ctx:GLSLParser.Vector_typeContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by GLSLParser#matrix_type.
-    def visitMatrix_type(self, ctx:GLSLParser.Matrix_typeContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by GLSLParser#opaque_type.
-    def visitOpaque_type(self, ctx:GLSLParser.Opaque_typeContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by GLSLParser#float_opaque_type.
-    def visitFloat_opaque_type(self, ctx:GLSLParser.Float_opaque_typeContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by GLSLParser#int_opaque_type.
-    def visitInt_opaque_type(self, ctx:GLSLParser.Int_opaque_typeContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by GLSLParser#u_int_opaque_type.
-    def visitU_int_opaque_type(self, ctx:GLSLParser.U_int_opaque_typeContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by GLSLParser#expression.
-    def visitExpression(self, ctx:GLSLParser.ExpressionContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by GLSLParser#primary_expression.
-    def visitPrimary_expression(self, ctx:GLSLParser.Primary_expressionContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by GLSLParser#constant_expression.
-    def visitConstant_expression(self, ctx:GLSLParser.Constant_expressionContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by GLSLParser#left_value.
-    def visitLeft_value(self, ctx:GLSLParser.Left_valueContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by GLSLParser#array_struct_selection.
-    def visitArray_struct_selection(self, ctx:GLSLParser.Array_struct_selectionContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by GLSLParser#assignment_expression.
-    def visitAssignment_expression(self, ctx:GLSLParser.Assignment_expressionContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by GLSLParser#arithmetic_assignment_expression.
-    def visitArithmetic_assignment_expression(self, ctx:GLSLParser.Arithmetic_assignment_expressionContext):
-        return self.visitChildren(ctx)
-
+    from build.classes.GLSLVisitor  import *
+    from Structs import *
+    
+class funcDefVisitor(ParseTreeVisitor):
+    
+    # Visit a parse tree produced by GLSLParser#statement_list.
+    def visitStatement_list(self, ctx:GLSLParser.Statement_listContext):
+        l = []
+        for c in ctx.getChildren():
+            x = self.visit(c) 
+            if x is not None:
+                l.append(x)
+        return l
 
     # Visit a parse tree produced by GLSLParser#function_definition.
     def visitFunction_definition(self, ctx:GLSLParser.Function_definitionContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by GLSLParser#function_declaration.
-    def visitFunction_declaration(self, ctx:GLSLParser.Function_declarationContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by GLSLParser#function_call.
-    def visitFunction_call(self, ctx:GLSLParser.Function_callContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by GLSLParser#return_Type.
-    def visitReturn_Type(self, ctx:GLSLParser.Return_TypeContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by GLSLParser#function_name.
-    def visitFunction_name(self, ctx:GLSLParser.Function_nameContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by GLSLParser#func_decl_member.
-    def visitFunc_decl_member(self, ctx:GLSLParser.Func_decl_memberContext):
-        return self.visitChildren(ctx)
-
-
+        L = (ctx.function_name().IDENTIFIER().getText(),ctx.statement_list())
+        C = self.visitChildren(ctx)
+        if C is not None:
+            return L + C
+        return L
+    
+class statementVisitor(ParseTreeVisitor):
+    
+    def visitChildren(self, node):
+        result = []
+        n = node.getChildCount()
+        for i in range(n):
+            c = node.getChild(i)
+            childResult = c.accept(self)
+            if childResult is not None:
+                result.append(childResult)
+        if len(result) == 1:
+            return result[0]
+        return result
+    
     # Visit a parse tree produced by GLSLParser#statement_list.
     def visitStatement_list(self, ctx:GLSLParser.Statement_listContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by GLSLParser#statement.
-    def visitStatement(self, ctx:GLSLParser.StatementContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by GLSLParser#simple_statement.
-    def visitSimple_statement(self, ctx:GLSLParser.Simple_statementContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by GLSLParser#compoud_statement.
-    def visitCompoud_statement(self, ctx:GLSLParser.Compoud_statementContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by GLSLParser#basic_statement.
-    def visitBasic_statement(self, ctx:GLSLParser.Basic_statementContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by GLSLParser#declaration_statement.
+        return ("{",self.visitChildren(ctx),"}")
+    
     def visitDeclaration_statement(self, ctx:GLSLParser.Declaration_statementContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by GLSLParser#simple_declaration.
-    def visitSimple_declaration(self, ctx:GLSLParser.Simple_declarationContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by GLSLParser#simple_declarator.
-    def visitSimple_declarator(self, ctx:GLSLParser.Simple_declaratorContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by GLSLParser#struct_declaration.
-    def visitStruct_declaration(self, ctx:GLSLParser.Struct_declarationContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by GLSLParser#function_definition_statement.
-    def visitFunction_definition_statement(self, ctx:GLSLParser.Function_definition_statementContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by GLSLParser#assignment_statement.
+        return "declaration"
+    
+    def visitExpression(self, ctx:GLSLParser.ExpressionContext):
+        return "expression"
+    
     def visitAssignment_statement(self, ctx:GLSLParser.Assignment_statementContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by GLSLParser#expression_statement.
-    def visitExpression_statement(self, ctx:GLSLParser.Expression_statementContext):
-        return self.visitChildren(ctx)
-
-
+        return "assignment"
+    
     # Visit a parse tree produced by GLSLParser#selection_statement.
     def visitSelection_statement(self, ctx:GLSLParser.Selection_statementContext):
-        return self.visitChildren(ctx)
-
-
+        cond = ctx.getChild(2).accept(self)
+        rest = ctx.getChild(4).accept(self)
+        return ("if",cond,rest)
+    
     # Visit a parse tree produced by GLSLParser#selection_rest_statement.
     def visitSelection_rest_statement(self, ctx:GLSLParser.Selection_rest_statementContext):
-        return self.visitChildren(ctx)
-
-
+        first = ctx.statement(0).accept(self)
+        second = ctx.statement(1).accept(self)
+        return [first,second]
+    
+    
     # Visit a parse tree produced by GLSLParser#switch_statement.
     def visitSwitch_statement(self, ctx:GLSLParser.Switch_statementContext):
-        return self.visitChildren(ctx)
+        return "switch"
+            
+    # Visit a parse tree produced by GLSLParser#case.
+    def visitCase(self, ctx:GLSLParser.CaseContext):
+        return "case"
+            
+    # Visit a parse tree produced by GLSLParser#default.
+    def visitDefault(self, ctx:GLSLParser.DefaultContext):
+        return "default"
+            
+    # Visit a parse tree produced by GLSLParser#while.
+    def visitWhile(self, ctx:GLSLParser.WhileContext):
+        cond = ctx.getChild(2).accept(self)
+        stat = ctx.getChild(4).accept(self)
+        return ("while", cond, stat)
+            
+    # Visit a parse tree produced by GLSLParser#do.
+    def visitDo(self, ctx:GLSLParser.DoContext):
+        stat = ctx.getChild(1).accept(self)
+        cond = ctx.getChild(4).accept(self)
+        return ("do", stat, "while", cond)
 
-
-    # Visit a parse tree produced by GLSLParser#case_label.
-    def visitCase_label(self, ctx:GLSLParser.Case_labelContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by GLSLParser#iteration_statement.
-    def visitIteration_statement(self, ctx:GLSLParser.Iteration_statementContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by GLSLParser#for_init_statement.
+            
+    # Visit a parse tree produced by GLSLParser#for.
+    def visitFor(self, ctx:GLSLParser.ForContext):
+        init = ctx.getChild(2).accept(self)
+        cond = ctx.getChild(3).accept(self)
+        post = ctx.getChild(4).accept(self)
+        stat = ctx.getChild(6).accept(self)
+    
+        return ("for", init, cond, post, stat)
+    
     def visitFor_init_statement(self, ctx:GLSLParser.For_init_statementContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by GLSLParser#for_cond_statement.
+        return ("init st.", self.visitChildren(ctx))
+    
+    
     def visitFor_cond_statement(self, ctx:GLSLParser.For_cond_statementContext):
-        return self.visitChildren(ctx)
+        return ("condition", self.visitChildren(ctx))
 
-
-    # Visit a parse tree produced by GLSLParser#for_rest_statement.
     def visitFor_rest_statement(self, ctx:GLSLParser.For_rest_statementContext):
-        return self.visitChildren(ctx)
+        return ("rest", self.visitChildren(ctx))
+            
+   # Visit a parse tree produced by GLSLParser#continue.
+    def visitContinue(self, ctx:GLSLParser.ContinueContext):
+        return  "cont."
+    
+    # Visit a parse tree produced by GLSLParser#break.
+    def visitBreak(self, ctx:GLSLParser.BreakContext):
+        return "break"
+
+    # Visit a parse tree produced by GLSLParser#return.
+    def visitReturn(self, ctx:GLSLParser.ReturnContext):
+        return "return"
+    
+    
+        # Visit a parse tree produced by GLSLParser#shift.
+    def visitShift(self, ctx:GLSLParser.ShiftContext):
+        return "shift op expr"
 
 
-    # Visit a parse tree produced by GLSLParser#jump_statement.
-    def visitJump_statement(self, ctx:GLSLParser.Jump_statementContext):
-        return self.visitChildren(ctx)
+    # Visit a parse tree produced by GLSLParser#cmp.
+    def visitCmp(self, ctx:GLSLParser.CmpContext):
+        return "cmp op expr"
 
 
+    # Visit a parse tree produced by GLSLParser#sign.
+    def visitSign(self, ctx:GLSLParser.SignContext):
+        return "sign op expr"
 
-del GLSLParser
+
+    # Visit a parse tree produced by GLSLParser#addsub.
+    def visitAddsub(self, ctx:GLSLParser.AddsubContext):
+        return "add or sub expr"
+
+
+    # Visit a parse tree produced by GLSLParser#unary.
+    def visitUnary(self, ctx:GLSLParser.UnaryContext):
+        return "unary op expr"
+
+
+    # Visit a parse tree produced by GLSLParser#eq.
+    def visitEq(self, ctx:GLSLParser.EqContext):
+        return "equality expr"
+
+
+    # Visit a parse tree produced by GLSLParser#preIncrement.
+    def visitPreIncrement(self, ctx:GLSLParser.PreIncrementContext):
+        return "pre incr expr"
+
+
+    # Visit a parse tree produced by GLSLParser#muldiv.
+    def visitMuldiv(self, ctx:GLSLParser.MuldivContext):
+        return "mul or div expr"
+
+
+    # Visit a parse tree produced by GLSLParser#bitwise.
+    def visitBitwise(self, ctx:GLSLParser.BitwiseContext):
+        return "bitwise operator expr"
+
+
+    # Visit a parse tree produced by GLSLParser#postIncrement.
+    def visitPostIncrement(self, ctx:GLSLParser.PostIncrementContext):
+        return "post inrement expr"
+
+
+    # Visit a parse tree produced by GLSLParser#logic.
+    def visitLogic(self, ctx:GLSLParser.LogicContext):
+        return "logical expr"
+
+
+    # Visit a parse tree produced by GLSLParser#ternary.
+    def visitTernary(self, ctx:GLSLParser.TernaryContext):
+        return "ternary expr"
+
+
+    # Visit a parse tree produced by GLSLParser#primary.
+    def visitPrimary(self, ctx:GLSLParser.PrimaryContext):
+        return "primary expr"
+
+  
