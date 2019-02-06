@@ -5,7 +5,6 @@ from build.classes.GLSLParser import GLSLParser
 from Structs import *
 from myGLSLListener import *
 from myGLSLVisitor import *
-from _overlapped import NULL
 
 class shaderWhisperer():
     def __init__(self):
@@ -48,7 +47,9 @@ class shaderWhisperer():
             return NULL
         
         visitor = statementVisitor()
-        return mainCtx.accept(visitor)
+        ret = mainCtx.accept(visitor)
+        print(visitor.vars)
+        return ret
     
     def __uses(self, file, name):
         allInstances = self.__callListener(usesGLSLListener, file, name)

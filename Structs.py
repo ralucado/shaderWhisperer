@@ -27,3 +27,21 @@ class srcInterval():
             return (self.x == other.x and self.y == other.y)
         return False
     #TODO: def len?
+    
+class programState():
+    def __init__(self, id):
+        self._id = id
+        self._vars = {} #dictionary of variables with (type, coordSpace) as values
+        self._goes = [] #list of tuples (id,condition) of accessible states and their respective transition conditions
+        self._from = [] #list of tuples (id,condition) of parent states that transition into the current state
+    
+    def getID(self):
+        return self._id
+    
+    def addChild(self, child, cond): #called by the main program
+        self._goes.append((child.getID(),cond))
+        child.addParent(self, cond)
+        
+    def addParent(self, parent, cond): #called only by other nodes when they are appended this child
+        self._from.append((parent.getID(),cond))
+        
