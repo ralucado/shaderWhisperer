@@ -27,6 +27,18 @@ class funcDefVisitor(ParseTreeVisitor):
         return L
     
 class statementVisitor(ParseTreeVisitor):
+    def __init__(self):
+        super().__init__()
+        self._lastId = 0
+        init = programState(0)
+        self._machineStates = {0: init}
+        self.vars = [] #temporal testing
+        
+    def newState(self):
+        self._lastId += 1
+        state = programState(self._lastId)
+        return state
+
     
     def visitChildren(self, node):
         result = []
@@ -45,7 +57,29 @@ class statementVisitor(ParseTreeVisitor):
         return ("{",self.visitChildren(ctx),"}")
     
     def visitDeclaration_statement(self, ctx:GLSLParser.Declaration_statementContext):
-        return "declaration"
+        r = self.visitChildren(ctx)
+        if r is None:
+            return "declaration"
+        return r
+    
+    # Visit a parse tree produced by GLSLParser#simple_declaration.
+    def visitSimple_declaration(self, ctx:GLSLParser.Simple_declarationContext):
+        type = ctx.type_specifier().type_specifier_nonarray()
+        if type is not None:
+            basictype = type.basic_type()
+            if basictype.matrix_type() is not None:
+                type = basictype.matrix_type()
+            elif basictype.vector_type() is not None:
+                type = basictype.vector_type()
+            else:
+                type = None
+            if type is not None: 
+                decls = ctx.simple_declarator()
+                for id in decls:
+                    self.vars.append((type.getChild(0).getSymbol().text, id.left_value().IDENTIFIER().getSymbol().text))
+        return self.visitChildren(ctx)
+
+
     
     def visitExpression(self, ctx:GLSLParser.ExpressionContext):
         return "expression"
