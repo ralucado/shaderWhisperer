@@ -6,6 +6,7 @@ layout (location = 1) in float whatevs;
 out vec4 frontColor;
 in out int[][64 + 2] speed, velocity;
 
+uniform mat4 modelViewProjectionMatrix;
 uniform mat3 normalMatrix;
 
 int getRandomNumber(int i, vec3 cosa){
