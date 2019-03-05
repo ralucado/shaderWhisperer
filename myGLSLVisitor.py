@@ -29,15 +29,13 @@ class funcDefVisitor(ParseTreeVisitor):
 class statementVisitor(ParseTreeVisitor):
     def __init__(self):
         super().__init__()
-        self._lastId = 0
-        init = programState(0)
-        self._machineStates = {0: init}
+        self._lastId = -1
+        self._machineStates = []
         self.vars = [] #temporal testing
         
     def newState(self):
         self._lastId += 1
-        state = programState(self._lastId)
-        return state
+        return programState(self._lastId)
 
     
     def visitChildren(self, node):
@@ -54,6 +52,8 @@ class statementVisitor(ParseTreeVisitor):
     
     # Visit a parse tree produced by GLSLParser#statement_list.
     def visitStatement_list(self, ctx:GLSLParser.Statement_listContext):
+        init = newState()
+        self._machineStates.append({self._lastId: init})
         return ("{",self.visitChildren(ctx),"}")
     
     def visitDeclaration_statement(self, ctx:GLSLParser.Declaration_statementContext):

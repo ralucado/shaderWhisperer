@@ -18,8 +18,7 @@ class declGLSLListener(GLSLListener):
         type = ctx.type_specifier_nonarray().getText()
         #is it array? buf. get ALL the array contexts to know the type
         #get directly the text (with the expression)?
-        arrayCtxs = ctx.getTypedRuleContexts(GLSLParser.Array_specifierContext)
-        for ctxArraySpecifier in arrayCtxs:
+        for ctxArraySpecifier in ctx.array_specifier():
             type += "[]"
             
         return type
@@ -36,9 +35,7 @@ class declGLSLListener(GLSLListener):
     def enterSimple_declaration(self, ctx:GLSLParser.Simple_declarationContext):
         #simple_declarator --> left_value
         #store the variable name
-         
-        declaratorCtxs = ctx.getTypedRuleContexts(GLSLParser.Simple_declaratorContext)
-        for ctxDeclarator in declaratorCtxs:
+        for ctxDeclarator in ctx.simple_declarator():
             if(ctxDeclarator.getText() == self.name):
                 token = ctxDeclarator.getChild(0).getChild(0).getSymbol()
                 type = self._getType(ctx.type_specifier())
@@ -61,7 +58,7 @@ class storageGLSLListener(declGLSLListener):
         #does the declaration have "out" or "in" storage qualifiers?
         if(ctx.type_qualifier() != None):
             ctxTypeQualifier = ctx.type_qualifier()
-            storageCtxs = ctxTypeQualifier.getTypedRuleContexts(GLSLParser.Storage_qualifierContext)
+            storageCtxs = ctxTypeQualifier.storage_qualifier()
             for ctxStorageQualifier in storageCtxs:
                 token = ctxStorageQualifier.getChild(0).getSymbol()
                 if(token.text == self.name):
@@ -74,8 +71,7 @@ class storageGLSLListener(declGLSLListener):
                 self.type = self._getType(ctx.type_specifier())
                 
                 #store the variable name
-                declaratorCtxs = ctx.getTypedRuleContexts(GLSLParser.Simple_declaratorContext)
-                for ctxDeclarator in declaratorCtxs:
+                for ctxDeclarator in ctx.simple_declarator():
                     self.result.append((ctxDeclarator.getText(), self.type, self.pos))
                     
                 self.pos = None
@@ -232,7 +228,13 @@ class expressionGLSLListener(GLSLListener):
         if(token != None):
             print(''.join(self.tabstack),"if", token.line, token.column)
         pass
-    
+    #else
+    def enterSelection_rest_statement(self, ctx:GLSLParser.Selection_rest_statementContext):
+        token = ctx.ELSE().getSymbol()
+        if(token != None):
+            print(''.join(self.tabstack),"else", token.line, token.column)
+        pass
+
     #while, do, for 
      # Enter a parse tree produced by GLSLParser#case.
     def enterCase(self, ctx:GLSLParser.CaseContext):
