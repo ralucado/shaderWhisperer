@@ -107,19 +107,19 @@ u_int_opaque_type: U_INT_OPAQUE;
 //����ʽ
 
 expression
-    :   primary_expression
-    |   expression INCREMENT_OP
-    |   INCREMENT_OP expression
-    |   ADDSUB_OP expression
-    |   UNARY_OP expression
-    |   expression MULDIV_OP expression
-    |   expression ADDSUB_OP expression
-    |   expression SHIFT_OP expression
-    |   expression COMPARE_OP expression
-    |   expression EQUAL_OP expression
-    |   expression BITWISE_OP expression
-    |   expression LOGIC_OP expression
-    |   expression QUESTION expression COLON expression
+    :   primary_expression #primary
+    |   expression INCREMENT_OP #postIncrement
+    |   INCREMENT_OP expression #preIncrement
+    |   ADDSUB_OP expression #sign
+    |   UNARY_OP expression #unary
+    |   expression MULDIV_OP expression #muldiv
+    |   expression ADDSUB_OP expression #addsub
+    |   expression SHIFT_OP expression #shift
+    |   expression COMPARE_OP expression #cmp
+    |   expression EQUAL_OP expression #eq
+    |   expression BITWISE_OP expression #bitwise
+    |   expression LOGIC_OP expression #logic
+    |   expression QUESTION expression COLON expression #ternary
     ;
 
 primary_expression
@@ -172,11 +172,11 @@ statement
 simple_statement
     :   function_definition_statement
     |   basic_statement SEMICOLON
-    |   selection_statement //if
-    |   switch_statement //switch
-    |   case_label //case, default
-    |   iteration_statement //while, do, for
-    |   jump_statement //continue, break, return
+    |   selection_statement
+    |   switch_statement
+    |   case_label
+    |   iteration_statement
+    |   jump_statement
     ;
 
 compoud_statement:  LEFT_BRACE statement_list RIGHT_BRACE;
@@ -209,22 +209,22 @@ assignment_statement: left_value array_struct_selection? (assignment_expression 
 expression_statement: expression;
 
 //����ѡ�����
-selection_statement:  IF LEFT_PAREN expression RIGHT_PAREN selection_rest_statement;
-selection_rest_statement: statement (ELSE statement)? ;
+selection_statement:  IF LEFT_PAREN expression RIGHT_PAREN selection_rest_statement ; 
+selection_rest_statement: statement (ELSE statement)? ; 
 
 //switch���
 switch_statement: SWITCH LEFT_PAREN expression RIGHT_PAREN LEFT_BRACE statement_list RIGHT_BRACE;
 
 case_label
-    : CASE expression COLON
-    | DEFAULT COLON
+    : CASE expression COLON #case
+    | DEFAULT COLON #default
     ;
 
 //ѭ�����
 iteration_statement
-    :   WHILE LEFT_PAREN expression RIGHT_PAREN statement
-    |   DO statement WHILE LEFT_PAREN expression RIGHT_PAREN SEMICOLON
-    |   FOR LEFT_PAREN for_init_statement for_cond_statement for_rest_statement RIGHT_PAREN statement
+    :   WHILE LEFT_PAREN expression RIGHT_PAREN statement #while
+    |   DO statement WHILE LEFT_PAREN expression RIGHT_PAREN SEMICOLON #do
+    |   FOR LEFT_PAREN for_init_statement for_cond_statement for_rest_statement RIGHT_PAREN statement #for
     ;
 
 for_init_statement
@@ -237,10 +237,10 @@ for_rest_statement: (basic_statement (',' basic_statement)*)? ;
 
 //��ת���
 jump_statement
-    :   CONTINUE SEMICOLON
-    |   BREAK SEMICOLON
-    |   RETURN SEMICOLON
-    |   RETURN expression SEMICOLON
+    :   CONTINUE SEMICOLON #continue
+    |   BREAK SEMICOLON #break
+    |   RETURN SEMICOLON #return
+    |   RETURN expression SEMICOLON #return
     ;
 
 /**

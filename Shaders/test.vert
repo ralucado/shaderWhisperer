@@ -6,6 +6,7 @@ layout (location = 1) in float whatevs;
 out vec4 frontColor;
 in out int[][64 + 2] speed, velocity;
 
+uniform mat4 modelViewProjectionMatrix;
 uniform mat3 normalMatrix;
 
 int getRandomNumber(int i, vec3 cosa){
@@ -14,6 +15,8 @@ int getRandomNumber(int i, vec3 cosa){
 
 void main() {
   float i;
+  vec3 micolo, tucolo = vec3(0,0,0);
+  mat4 blabla[][];
   frontColor=vec4(normalize(normalMatrix*normal).z);
   for(int i=0; i < 360; ++i){
     vtexCoord=texCoord;
@@ -23,6 +26,9 @@ void main() {
       frontColor += vec3(1,1,1);
       frontColor.b += 2;
       continue;
+    }
+    else if(1 == 1){
+        frontColor.b += 3;
     }
     else{
       ++myColor.r;
