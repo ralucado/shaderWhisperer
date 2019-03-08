@@ -5,7 +5,8 @@ from build.classes.GLSLParser import GLSLParser
 from Structs import *
 from myGLSLListener import *
 from myGLSLVisitor import *
-
+from Structs import *
+from Setup import Setup
 class shaderWhisperer():
     def __init__(self, paths):
         self._sources = paths
@@ -13,8 +14,9 @@ class shaderWhisperer():
     
     #TODO: handle fileName not defined (try to define automatically on call?)        
     def __getTree(self, source):
+        s = Setup()
         try:
-            file = FileStream(source)
+            file = FileStream(source,s.getEncoding())
         except FileNotFoundError:
             sys.stderr.write("FileNotFoundError: No such file or directory: "+str(source)+"\n")
             return [srcPoint(-1,-1)]
@@ -40,6 +42,7 @@ class shaderWhisperer():
     def __callVisitor(self, name=None):
         ret = []
         for source in self._sources:
+            print("Testing source",source)
             tree = self.__getTree(source)
             visitor = funcDefVisitor()
             functions = visitor.visit(tree)
@@ -53,7 +56,8 @@ class shaderWhisperer():
             
             visitor = statementVisitor()
             ret.append(mainCtx.accept(visitor))
-            print(visitor.vars)
+            #for id,state in visitor.machineStates.items():
+                #print ("state",id,"has",state.vars)
         return ret
     
     def __uses(self, name):

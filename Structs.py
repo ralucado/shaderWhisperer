@@ -31,7 +31,7 @@ class srcInterval():
 class programState():
     def __init__(self, id):
         self._id = id
-        self._vars = {} #dictionary of variables with (type, coordSpace) as values
+        self.vars = {} #dictionary of variables with (type, coordSpace) as values
         self._goes = [] #list of tuples (id,condition) of accessible states and their respective transition conditions
         self._from = [] #list of tuples (id,condition) of parent states that transition into the current state
     
@@ -44,4 +44,10 @@ class programState():
         
     def addParent(self, parent, cond): #called only by other nodes when they are appended this child
         self._from.append((parent.getID(),cond))
-        
+    
+    def increment(self):
+        s=programState(self._id+1)
+        s.vars = self.vars.copy()
+        self.addChild(s, "")
+        return s
+            
