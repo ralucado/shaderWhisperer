@@ -22,6 +22,8 @@ void main() {
   else fragColor=RED;
   isYellowStrip();
   isYellowStrip(f);
+  isYellowStrip(2);
+  isYellowStrip(1,2,3);
   for(int i=0; i < 4; ++i){
 	  whatever = fract(whatevs);
 	  fract(whatevs);

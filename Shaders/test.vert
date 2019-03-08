@@ -9,6 +9,9 @@ in out int[][64 + 2] speed, velocity;
 uniform mat4 modelViewProjectionMatrix;
 uniform mat3 normalMatrix;
 
+uniform vec3 boundingBoxMin, boundingBoxMax; // object
+uniform vec4 lightPosition; // eye
+
 int getRandomNumber(int i, vec3 cosa){
   return 4;
 }
@@ -16,36 +19,9 @@ int getRandomNumber(int i, vec3 cosa){
 void main() {
   float i;
   vec3 micolo, tucolo = vec3(0,0,0);
+  tucolo = lightPosition;
+  micolo = boundingBoxMin;
   mat4 blabla[][];
-  frontColor=vec4(normalize(normalMatrix*normal).z);
-  for(int i=0; i < 360; ++i){
-    vtexCoord=texCoord;
-  }
-  while(frontColor != myColor && speed[][] > 10 && vertex.xyz != frontColor.rgb){
-    if(frontColor == normalize(normalMatrix*normal)){
-      frontColor += vec3(1,1,1);
-      frontColor.b += 2;
-      continue;
-    }
-    else if(1 == 1){
-        frontColor.b += 3;
-    }
-    else{
-      ++myColor.r;
-      velocity = speed;
-    }
-  }
-  switch(frontColor){
-    case vec3(1,1,1):
-    getRandomNumber();
-    frontColor();
-      break;
-    case myColor:
-    default:
-      break;
-  }
-  int i = 99; //decl and assig are ok
-  do{
-    --i;
-  }while(i != 0);
+  normal = normalMatrix*normal;
+  frontColor=vec4(normalize(normal).z);
 }
