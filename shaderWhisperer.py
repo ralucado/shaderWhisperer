@@ -7,6 +7,7 @@ from myGLSLListener import *
 from myGLSLVisitor import *
 from Structs import *
 from Setup import Setup
+import logging
 class shaderWhisperer():
     def __init__(self, paths):
         self._sources = paths
@@ -14,14 +15,11 @@ class shaderWhisperer():
     
     #TODO: handle fileName not defined (try to define automatically on call?)        
     def __getTree(self, source):
-        s = Setup()
+        self._setup = Setup()
         try:
-            file = FileStream(source,s.getEncoding())
+            file = FileStream(source,self._setup.getEncoding())
         except FileNotFoundError:
-            sys.stderr.write("FileNotFoundError: No such file or directory: "+str(source)+"\n")
-            return [srcPoint(-1,-1)]
-        except KeyError:
-            sys.stderr.write("KeyError: Not defined source: "+str(source)+"\n")
+            logging.error("FileNotFoundError: No such file or directory: "+str(source)+"\n")
             return [srcPoint(-1,-1)]
         lexer = GLSLLexer(file)
         stream = CommonTokenStream(lexer)
@@ -42,8 +40,8 @@ class shaderWhisperer():
     def __callVisitor(self, name=None):
         ret = []
         for source in self._sources:
-            print("Testing source",source)
             tree = self.__getTree(source)
+            logging.info("Testing source "+source)
             visitor = funcDefVisitor()
             functions = visitor.visit(tree)
             mainCtx = None
@@ -51,7 +49,7 @@ class shaderWhisperer():
                 if foo == "main":
                     mainCtx = st_list
             if mainCtx is None:
-                sys.stderr.write("Error: No main function: "+str(self._sources[filename])+"\n")
+                logging.error("Error: No main function: "+str(self._sources[filename])+"\n")
                 return NULL
             
             visitor = statementVisitor()
@@ -117,6 +115,9 @@ class shaderWhisperer():
     
     def tryVisitor(self, name):
         return self.__callVisitor(name)
+    
+    def setConstantCoordSpace(self, space):
+        self._setup.setConstantExpressionSpace(space)
     
         
     
