@@ -1,6 +1,8 @@
 from antlr4 import *
 from GLSLParser import GLSLParser
 import logging
+from Setup import Setup
+
 if __name__ is not None and "." in __name__:
     from .build.classes.GLSLVisitor import *
     from .Structs import *
@@ -32,6 +34,55 @@ class expressionVisitor(ParseTreeVisitor):
     def __init__(self, variables):
         self._variables = variables
         logging.debug(variables)
+        
+    def isTranform(self,space):
+        return len(space.split('.')) > 1
+    
+    def getTransform(self,t):
+        s = t.split('.')
+        return [s[1],s[2]]
+    
+    def getTransformFrom(self,t):
+        s = t.split('.')
+        return s[1]
+    
+    def getTransformTo(self,t):
+        s = t.split('.')
+        return s[2]
+    
+    def resultingFromTransform(self, t, space):
+        if self.getTransformFrom(t) != space:
+            return "wrong"
+        return self.getTransformTo(t)
+    
+    #returns the resulting coordinate space between a binary operation op of variable sin coord spaces left and right
+    def resultingSpace(self, left, right, op):
+        #A transform matrix can't be on the right
+        if(self.isTranform(right)):
+            return "wrong"
+        if left == right:
+            return left
+        if "unknown" in [left,right]:
+            return "unknown"
+        if op == "*" and self.isTranform(left):
+            return self.resultingFromTransform(left,right)
+        if left == "constant":
+            return right
+        if right == "constant":
+            return left
+        return "wrong"
+    
+    #pre: spaces contains only "model,world,eye,clip" and "constant"
+    def resultingSpaceFromList(self, spaces):
+        spaces = list(dict.fromkeys(spaces)) #remove duplicates
+        if len(spaces) > 2: #we cannot have more than 2 spaces: a valid (eye, world, clip, model) and a constant
+            return "wrong"
+        elif len(spaces) == 1:
+            return spaces[0]
+        elif spaces[0] == "constant":
+            return spaces[1]
+        else:
+            return spaces[0]
     
     def aggregateResult(self, aggregate, nextResult):
         if nextResult is not None:
@@ -45,19 +96,18 @@ class expressionVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by GLSLParser#addsub.
     def visitAddsub(self, ctx:GLSLParser.AddsubContext):
-        #print("------- addsub of",ctx.expression(0).getText(),ctx.ADDSUB_OP().getText(),ctx.expression(1).getText())
         left = ctx.expression(0).accept(self)
         right = ctx.expression(1).accept(self)
-        return str(left)+ctx.ADDSUB_OP().getText()+str(right)
+        return self.resultingSpace(str(left),str(right), ctx.ADDSUB_OP().getText())
     
     # Visit a parse tree produced by GLSLParser#muldiv.
     def visitMuldiv(self, ctx:GLSLParser.MuldivContext):
-        #print("-------- muldiv of",ctx.expression(0).getText(),ctx.MULDIV_OP().getText(),ctx.expression(1).getText())
         left = ctx.expression(0).accept(self)
         right = ctx.expression(1).accept(self)
-        return str(left)+ctx.MULDIV_OP().getText()+str(right)
+        return self.resultingSpace(str(left),str(right), ctx.MULDIV_OP().getText())
     
     def visitLeft_value_exp(self, ctx:GLSLParser.Left_value_expContext):
+        leftValue = ctx.left_value()
         if(ctx.array_struct_selection() is not None):
             if ctx.array_struct_selection().struct_specifier() is not None:
                 st = ctx.array_struct_selection().struct_specifier()[-1].accept(self)
@@ -65,29 +115,45 @@ class expressionVisitor(ParseTreeVisitor):
                     return "constant"
                 elif len(st) == 2:
                     return "wrong"
-        if(ctx.left_value().IDENTIFIER() is not None):
-            return ctx.left_value().IDENTIFIER().getText()
-        if(ctx.left_value().function_call() is not None):
-            return "function call"
-        return self.visitChildren(ctx.left_value())
+        if(leftValue.IDENTIFIER() is not None):
+            #coord space of the variable stored in the dictionary
+            if leftValue.IDENTIFIER().getText() in self._variables:
+                return self._variables[leftValue.IDENTIFIER().getText()][1] 
+            else: return "constant"
+        if(leftValue.function_call() is not None):
+            return "unknown"
+        return self.visitChildren(leftValue)
+    
+    # Visit a parse tree produced by GLSLParser#struct_specifier.
+    def visitStruct_specifier(self, ctx:GLSLParser.Struct_specifierContext):
+        return ctx.expression().getText()
     
     # Visit a parse tree produced by GLSLParser#constant_expression.
     def visitConstant_expression(self, ctx:GLSLParser.Constant_expressionContext):
-        return"constant"
+        return Setup().getConstantExpressionSpace()
     
     # Visit a parse tree produced by GLSLParser#basic_type_exp.
     def visitBasic_type_exp(self, ctx:GLSLParser.Basic_type_expContext):
-        spaces = []
-        for exp in ctx.expression():
-            spaces.append(exp.accept(self))
-        return str(spaces)
+        if(ctx.basic_type().vector_type() is not None or ctx.basic_type().matrix_type() is not None):
+            spaces = []
+            for exp in ctx.expression():
+                space = exp.accept(self)
+                if(space == "wrong" or space == "unknown"): return space
+                elif self.isTranform(space): #transform matrix in there
+                    return "wrong"
+                spaces.append(space)
+            return self.resultingSpaceFromList(spaces)
+        
+        return "constant"
 
 
 class statementVisitor(ParseTreeVisitor):
     def __init__(self):
         super().__init__()
+        s = Setup()
         self._lastId = 0
         init = programState(0)
+        init.vars = s.getDefaultVars()
         self.machineStates = {0: init}
         self.vars = [] #temporal testing
         
@@ -140,16 +206,19 @@ class statementVisitor(ParseTreeVisitor):
             if type is not None: 
                 decls = ctx.simple_declarator()
                 for id in decls:
-                    nameString = id.left_value().IDENTIFIER().getSymbol().text
                     typeString = type.getChild(0).getSymbol().text
-                    state = self.machineStates[self._lastId]
-                    if(id.assignment_expression() is not None):
-                        vis = expressionVisitor(self.machineStates[self._lastId].vars)
-                        v=vis.visitChildren(id.assignment_expression())
-                        logging.debug(v)
-                    state.vars[nameString] = (typeString, "object")
-                    self.machineStates[self._lastId] = state
-                    self.vars.append((typeString, nameString))
+                    if(typeString != "vec2"):
+                        nameString = id.left_value().IDENTIFIER().getSymbol().text
+                        state = self.machineStates[self._lastId]
+                        space = "unknown"
+                        if(id.assignment_expression() is not None):
+                            vis = expressionVisitor(self.machineStates[self._lastId].vars)
+                            space=vis.visitChildren(id.assignment_expression())
+                            logging.debug(id.assignment_expression().getText())
+                            logging.debug(space)
+                        state.vars[nameString] = (typeString, space)
+                        self.machineStates[self._lastId] = state
+                        self.vars.append((typeString, nameString))
         return self.visitChildren(ctx)
 
     def visitLeft_value(self, ctx:GLSLParser.Left_valueContext):
@@ -165,16 +234,18 @@ class statementVisitor(ParseTreeVisitor):
         targetVar = ctx.left_value()
         if(targetVar.IDENTIFIER() is not None):
             targetVar = targetVar.IDENTIFIER().getText()
-            expression = ""
-            if ctx.assignment_expression() is not None:
-                expression = ctx.assignment_expression().expression()
-                #_overrideVar(targetVar, expression)
-                vis = expressionVisitor(self.machineStates[self._lastId].vars)
-                v = vis.visitChildren(ctx.assignment_expression())
-                logging.debug(v)
-            else:
-                expression = ctx.arithmetic_assignment_expression().expression()
-            return targetVar + " = " + expression.getText()
+            if  targetVar in self.machineStates[self._lastId].vars.keys():
+                expression = ""
+                if ctx.assignment_expression() is not None:
+                        expression = ctx.assignment_expression().expression()
+                        #_overrideVar(targetVar, expression)
+                        vis = expressionVisitor(self.machineStates[self._lastId].vars)
+                        v = vis.visitChildren(ctx.assignment_expression())
+                        logging.debug(ctx.assignment_expression().getText())
+                        logging.debug(v)
+                else:
+                    expression = ctx.arithmetic_assignment_expression().expression()
+                return targetVar + " = " + expression.getText()
         return "assignment"
     
     # Visit a parse tree produced by GLSLParser#selection_statement.
