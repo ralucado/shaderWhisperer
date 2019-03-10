@@ -19,16 +19,14 @@ VERSION_PROFILE
     ;
 
 //����������
-type_qualifier
-    :	storage_qualifier
-	|	layout_qualifier
-	|	layout_qualifier storage_qualifier
-	|	interpolation_qualifier storage_qualifier
-	|	interpolation_qualifier
-	|	invariant_qualifier storage_qualifier
-	|	invariant_qualifier interpolation_qualifier storage_qualifier
-	|	invariant_qualifier
-    ;
+type_qualifier 
+    :   (storage_qualifier 
+    |   layout_qualifier 
+    |   precision_qualifier 
+    |   interpolation_qualifier 
+    |   invariant_qualifier 
+    |   precise_qualifier)+ 
+    ; 
 
 
 layout_qualifier:   'layout' LEFT_PAREN layout_qualifier_id  (COMMA layout_qualifier_id)* RIGHT_PAREN;
