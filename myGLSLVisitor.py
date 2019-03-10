@@ -1,4 +1,5 @@
 from antlr4 import *
+from antlr4.tree.Tree import TerminalNode
 from GLSLParser import GLSLParser
 import logging
 from Setup import Setup
@@ -169,9 +170,15 @@ class statementVisitor(ParseTreeVisitor):
         self.machineStates = [[self._currentState]]
         self.vars = [] #temporal testing
         
-    def _newState(self):
-        self._currentState = self.machineStates[0][-1].increment()
+    def addVars(self, vars):
+        self._currentState.vars.update(vars)
+    
+    def _newState(self, id):
+        self._currentState = self.machineStates[0][-1].increment(id)
         self.machineStates[0].append(self._currentState)
+        
+    def visitFunction_definition(self, ctx:GLSLParser.Function_definitionContext):
+        return
 
     
     def visitChildren(self, node):
@@ -188,6 +195,7 @@ class statementVisitor(ParseTreeVisitor):
     
     # Visit a parse tree produced by GLSLParser#statement_list.
     def visitStatement_list(self, ctx:GLSLParser.Statement_listContext):
+        logging.debug(str(ctx.getSourceInterval()))
         c = ctx.getChildren()
         res = []
         for child in c:
@@ -196,17 +204,15 @@ class statementVisitor(ParseTreeVisitor):
                 resultingStateContext = []
                 for i in range(0, len(originalStateContext)):
                     self.machineStates = [deepcopy(originalStateContext[i])]
-                    self._newState()
                     res.append(child.accept(self))
-                    resultingStateContext = deepcopy(resultingStateContext) + deepcopy(self.machineStates)
-                self.machineStates = deepcopy(resultingStateContext)
+                    resultingStateContext += deepcopy(self.machineStates)
+                self.machineStates += resultingStateContext
             else:
-                self._newState()
                 res.append(child.accept(self))
         return ("{",res,"}")
     
     def visitSimple_statement(self, ctx:GLSLParser.Simple_statementContext):
-        self._newState()
+        self._newState(ctx.getSourceInterval()[0])
         return ("{",self.visitChildren(ctx),"}")
 
     
@@ -287,11 +293,11 @@ class statementVisitor(ParseTreeVisitor):
         originalStates = deepcopy(self.machineStates)
         body_s = body_statement.accept(self)
         afterBodyStates = deepcopy(self.machineStates)
-        afterElseStates = deepcopy(originalStates)
+        afterElseStates = originalStates
         else_s = ""
         else_statement = ctx.selection_rest_statement().statement(1) #Might be None
         if(else_statement is not None):
-            self.machineStates = deepcopy(originalStates)
+            self.machineStates = originalStates
             else_s = else_statement.accept(self)
             afterElseStates = deepcopy(self.machineStates)
         self.machineStates = afterBodyStates + afterElseStates
@@ -322,26 +328,37 @@ class statementVisitor(ParseTreeVisitor):
             
     # Visit a parse tree produced by GLSLParser#while.
     def visitWhile(self, ctx:GLSLParser.WhileContext):
-        cond = ctx.getChild(2).accept(self)
-        stat = ctx.getChild(4).accept(self)
-        return ("while", cond, stat)
+        cond = ctx.expression().accept(self)
+        body_statement = ctx.statement()
+        originalStates = deepcopy(self.machineStates)
+        body_s = body_statement.accept(self)
+        afterBodyStates = deepcopy(self.machineStates)
+        self.machineStates = afterBodyStates + originalStates
+        return ("while", cond, body_s)
             
     # Visit a parse tree produced by GLSLParser#do.
     def visitDo(self, ctx:GLSLParser.DoContext):
-        stat = ctx.getChild(1).accept(self)
-        cond = ctx.getChild(4).accept(self)
-        return ("do", stat, "while", cond)
+        cond = ctx.expression().accept(self)
+        body_statement = ctx.statement()
+        originalStates = deepcopy(self.machineStates)
+        body_s = body_statement.accept(self)
+        afterBodyStates = deepcopy(self.machineStates)
+        self.machineStates = afterBodyStates + originalStates
+        return ("do", body_s, "while", cond)
 
             
     # Visit a parse tree produced by GLSLParser#for.
     def visitFor(self, ctx:GLSLParser.ForContext):
-        init = ctx.getChild(2).accept(self)
-        cond = ctx.getChild(3).accept(self)
-        post = ctx.getChild(4).accept(self)
-        stat = ctx.getChild(6).accept(self)
+        #init = ctx.for_init_statement().accept(self)
+        cond = ctx.for_cond_statement().accept(self)
+        originalStates = deepcopy(self.machineStates)
+        stat_s = ctx.statement().accept(self)
+        afterBodyStates = deepcopy(self.machineStates)
+        self.machineStates = afterBodyStates + originalStates
+        #post = ctx.for_rest_statement()
+        return ("for", stat)
     
-        return ("for", init, cond, post, stat)
-    
+    """
     def visitFor_init_statement(self, ctx:GLSLParser.For_init_statementContext):
         return ("init st.", self.visitChildren(ctx))
     
@@ -432,4 +449,5 @@ class statementVisitor(ParseTreeVisitor):
         # Visit a parse tree produced by GLSLParser#basic_type.
     def visitBasic_type(self, ctx:GLSLParser.Basic_typeContext):
         return ctx.getText()
+    """
   

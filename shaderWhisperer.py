@@ -37,7 +37,7 @@ class shaderWhisperer():
             result.append(printer.result)
         return result
     
-    def __callVisitor(self, name=None):
+    def __spaces(self, name=None):
         ret = []
         for source in self._sources:
             tree = self.__getTree(source)
@@ -53,11 +53,22 @@ class shaderWhisperer():
                 return NULL
             
             visitor = statementVisitor(self._setup)
-            ret.append(mainCtx.accept(visitor))
-            #for stateList in visitor.machineStates:
-            #    for state in stateList:
-            #        print ("state",state.getID(),"has", self.__printableVars(state.vars))
-        return ret
+            visitor.visit(tree)
+            vars = self.__filterVars(visitor._currentState.vars)
+            visitor = statementVisitor(self._setup)
+            visitor.addVars(vars)
+            mainCtx.accept(visitor)
+            ret = {}
+            for stateList in visitor.machineStates:
+                for state in stateList:
+                    vars = self.__filterVars(state.vars)
+                    v = vars.get(name,None)
+                    if v is not None:
+                        visitedState = ret.get(state.getID(),[])
+                        if(v[1] not in visitedState):
+                            visitedState.append(v[1])
+                            ret[state.getID()] = visitedState
+        return [ret[k] for k in sorted(ret.keys())]
     
     def __uses(self, name):
         result = []
@@ -114,13 +125,13 @@ class shaderWhisperer():
     def expressions(self, name):
         return self.__callListener(expressionGLSLListener, name)
     
-    def tryVisitor(self, name):
-        return self.__callVisitor(name)
+    def coordSpaces(self, name):
+        return self.__spaces(name)
     
     def setConstantCoordSpace(self, space):
         self._setup.setConstantExpressionSpace(space)
         
-    def __printableVars(self, vars):
+    def __filterVars(self, vars):
         defaultVars = self._setup.getDefaultVars()
         for varname in defaultVars.keys():
             vars.pop(varname, None)

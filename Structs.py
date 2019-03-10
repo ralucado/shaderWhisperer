@@ -45,8 +45,8 @@ class programState():
     def addParent(self, parent, cond): #called only by other nodes when they are appended this child
         self._from.append((parent.getID(),cond))
     
-    def increment(self):
-        s=programState(self._id+1)
+    def increment(self, id):
+        s=programState(id)
         s.vars = self.vars.copy()
         self.addChild(s, "")
         return s
