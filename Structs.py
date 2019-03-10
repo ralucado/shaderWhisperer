@@ -50,4 +50,11 @@ class programState():
         s.vars = self.vars.copy()
         self.addChild(s, "")
         return s
+    
+    def resetParents(self):
+        self._from = []
+        
+    def resetChildren(self):
+        self._goes = []
+
             
