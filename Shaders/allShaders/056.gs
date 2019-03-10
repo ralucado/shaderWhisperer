@@ -1,7 +1,7 @@
 #version 330 core
         
-layout(triangles) in;
-layout(triangle_strip, max_vertices=24) out;
+//layout(triangles) in;
+//layout(triangle_strip, max_vertices=24) out;
 
 in vec4 vfrontColor[];
 out float gtop;
@@ -72,7 +72,7 @@ void paintCube(vec3 BT, vec4 color) {
   EndPrimitive();
 }
 
-void main(void) {
+void main() {
   // baricentro triangulo -(i, j, k) enteros
   vec3 BT=(gl_in[0].gl_Position.xyz+
           gl_in[1].gl_Position.xyz+
