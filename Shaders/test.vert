@@ -23,11 +23,11 @@ void main() {
   //micolo = boundingBoxMin;
   vec3 P = modelViewProjectionMatrix*vec4(vertex,1);
   vec3 N = normal;
-  if (a>0){
+  while (a>0){
 	  P+=N;
 	  P.z+=N.z;
   }
-  else if(a>0){
+  if(a>0){
 	  if(a<0){
 	      P=projectionMatrixInverse*P;
 	  }
