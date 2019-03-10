@@ -11,11 +11,11 @@ import logging
 class shaderWhisperer():
     def __init__(self, paths):
         self._sources = paths
+        self._setup = Setup()
 
     
     #TODO: handle fileName not defined (try to define automatically on call?)        
     def __getTree(self, source):
-        self._setup = Setup()
         try:
             file = FileStream(source,self._setup.getEncoding())
         except FileNotFoundError:
@@ -52,10 +52,11 @@ class shaderWhisperer():
                 logging.error("Error: No main function: "+str(self._sources[filename])+"\n")
                 return NULL
             
-            visitor = statementVisitor()
+            visitor = statementVisitor(self._setup)
             ret.append(mainCtx.accept(visitor))
-            #for id,state in visitor.machineStates.items():
-                #print ("state",id,"has",state.vars)
+            #for stateList in visitor.machineStates:
+            #    for state in stateList:
+            #        print ("state",state.getID(),"has", self.__printableVars(state.vars))
         return ret
     
     def __uses(self, name):
@@ -118,6 +119,12 @@ class shaderWhisperer():
     
     def setConstantCoordSpace(self, space):
         self._setup.setConstantExpressionSpace(space)
+        
+    def __printableVars(self, vars):
+        defaultVars = self._setup.getDefaultVars()
+        for varname in defaultVars.keys():
+            vars.pop(varname, None)
+        return vars
     
         
     
