@@ -5,21 +5,21 @@ from build.classes.GLSLParser import GLSLParser
 from Structs import *
 from myGLSLListener import *
 from myGLSLVisitor import *
-
+from Structs import *
+from Setup import Setup
+import logging
 class shaderWhisperer():
     def __init__(self, paths):
         self._sources = paths
+        self._setup = Setup()
 
     
     #TODO: handle fileName not defined (try to define automatically on call?)        
     def __getTree(self, source):
         try:
-            file = FileStream(source)
+            file = FileStream(source,self._setup.getEncoding())
         except FileNotFoundError:
-            sys.stderr.write("FileNotFoundError: No such file or directory: "+str(source)+"\n")
-            return [srcPoint(-1,-1)]
-        except KeyError:
-            sys.stderr.write("KeyError: Not defined source: "+str(source)+"\n")
+            logging.error("FileNotFoundError: No such file or directory: "+str(source)+"\n")
             return [srcPoint(-1,-1)]
         lexer = GLSLLexer(file)
         stream = CommonTokenStream(lexer)
@@ -37,10 +37,11 @@ class shaderWhisperer():
             result.append(printer.result)
         return result
     
-    def __callVisitor(self, name=None):
+    def __spaces(self, name=None):
         ret = []
         for source in self._sources:
             tree = self.__getTree(source)
+            logging.info("Testing source "+source)
             visitor = funcDefVisitor()
             functions = visitor.visit(tree)
             mainCtx = None
@@ -48,13 +49,26 @@ class shaderWhisperer():
                 if foo == "main":
                     mainCtx = st_list
             if mainCtx is None:
-                sys.stderr.write("Error: No main function: "+str(self._sources[filename])+"\n")
+                logging.error("Error: No main function: "+str(self._sources[filename])+"\n")
                 return NULL
             
-            visitor = statementVisitor()
-            ret.append(mainCtx.accept(visitor))
-            print(visitor.vars)
-        return ret
+            visitor = statementVisitor(self._setup)
+            visitor.visit(tree)
+            vars = self.__filterVars(visitor._currentState.vars)
+            visitor = statementVisitor(self._setup)
+            visitor.addVars(vars)
+            mainCtx.accept(visitor)
+            ret = {}
+            for stateList in visitor.machineStates:
+                for state in stateList:
+                    vars = self.__filterVars(state.vars)
+                    v = vars.get(name,None)
+                    if v is not None:
+                        visitedState = ret.get(state.getID(),[])
+                        if(v[1] not in visitedState):
+                            visitedState.append(v[1])
+                            ret[state.getID()] = visitedState
+        return [ret[k] for k in sorted(ret.keys())]
     
     def __uses(self, name):
         result = []
@@ -111,8 +125,17 @@ class shaderWhisperer():
     def expressions(self, name):
         return self.__callListener(expressionGLSLListener, name)
     
-    def tryVisitor(self, name):
-        return self.__callVisitor(name)
+    def coordSpaces(self, name):
+        return self.__spaces(name)
+    
+    def setConstantCoordSpace(self, space):
+        self._setup.setConstantExpressionSpace(space)
+        
+    def __filterVars(self, vars):
+        defaultVars = self._setup.getDefaultVars()
+        for varname in defaultVars.keys():
+            vars.pop(varname, None)
+        return vars
     
         
     

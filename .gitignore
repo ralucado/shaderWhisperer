@@ -107,3 +107,7 @@ venv.bak/
 *.prefs
 
 \.settings/org\.eclipse\.wst\.common\.project\.facet\.core\.xml
+
+log\.txt
+
+NONE

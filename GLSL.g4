@@ -19,14 +19,14 @@ VERSION_PROFILE
     ;
 
 //����������
-type_qualifier
-    :   (storage_qualifier
-    |   layout_qualifier
-    |   precision_qualifier
-    |   interpolation_qualifier
-    |   invariant_qualifier
-    |   precise_qualifier)+
-    ;
+type_qualifier 
+    :   (storage_qualifier 
+    |   layout_qualifier 
+    |   precision_qualifier 
+    |   interpolation_qualifier 
+    |   invariant_qualifier 
+    |   precise_qualifier)+ 
+    ; 
 
 
 layout_qualifier:   'layout' LEFT_PAREN layout_qualifier_id  (COMMA layout_qualifier_id)* RIGHT_PAREN;
@@ -123,10 +123,10 @@ expression
     ;
 
 primary_expression
-    :   constant_expression
-    |   basic_type LEFT_PAREN (expression  (COMMA expression)*)? RIGHT_PAREN
-    |   LEFT_PAREN type_specifier RIGHT_PAREN expression
-    |   left_value  array_struct_selection?
+    :   constant_expression #constant_exp
+    |   basic_type LEFT_PAREN (expression  (COMMA expression)*)? RIGHT_PAREN #basic_type_exp
+    |   LEFT_PAREN type_specifier RIGHT_PAREN expression #type_spec_exp
+    |   left_value  array_struct_selection? #left_value_exp
     ;
 
 constant_expression
@@ -135,7 +135,11 @@ constant_expression
     |   bool_num
     ;
 
-left_value: function_call |   LEFT_PAREN expression RIGHT_PAREN | IDENTIFIER;
+left_value
+	:	function_call
+	|   LEFT_PAREN expression RIGHT_PAREN
+	|	IDENTIFIER
+	;
 
 array_struct_selection: (array_specifier | struct_specifier)+;
 
@@ -194,7 +198,10 @@ declaration_statement
     |   function_declaration
     ;
 
-simple_declaration: type_qualifier? type_specifier  simple_declarator (COMMA simple_declarator)*;
+simple_declaration
+	:	(type_qualifier? type_specifier  simple_declarator (COMMA simple_declarator)*)
+	|	type_qualifier
+	;
 simple_declarator: left_value array_specifier* (assignment_expression)?;
 
 struct_declaration: type_qualifier? STRUCT IDENTIFIER LEFT_BRACE (simple_declaration SEMICOLON)+ RIGHT_BRACE;
