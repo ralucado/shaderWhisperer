@@ -75,7 +75,7 @@ type_specifier_nonarray
     ;
 
 array_specifier :   LEFT_BRACKET expression? RIGHT_BRACKET;
-struct_specifier:   DOT expression;
+struct_specifier:   DOT left_value_exp;
 
 basic_type
     :   void_type
@@ -122,12 +122,23 @@ expression
     |   expression QUESTION expression COLON expression #ternary
     ;
 
+    
+constant_exp:   constant_expression;
+
+basic_type_exp: basic_type LEFT_PAREN (expression  (COMMA expression)*)? RIGHT_PAREN;
+
+type_spec_exp: LEFT_PAREN type_specifier RIGHT_PAREN expression;
+
+left_value_exp: left_value  array_struct_selection?;
+
+
 primary_expression
-    :   constant_expression #constant_exp
-    |   basic_type LEFT_PAREN (expression  (COMMA expression)*)? RIGHT_PAREN #basic_type_exp
-    |   LEFT_PAREN type_specifier RIGHT_PAREN expression #type_spec_exp
-    |   left_value  array_struct_selection? #left_value_exp
+    :   constant_exp
+    |   basic_type_exp
+    |   type_spec_exp
+    |   left_value_exp
     ;
+
 
 constant_expression
     :   integer

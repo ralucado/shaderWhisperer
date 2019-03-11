@@ -44,7 +44,7 @@ class shaderWhisperer():
         return result
     
     def __spaces(self, name=None):
-        ret = []
+        result = []
         for source in self._sources:
             tree = self.__getTree(source)
             logging.info("Testing source "+source)
@@ -74,7 +74,8 @@ class shaderWhisperer():
                         if(v[1] not in visitedState):
                             visitedState.append(v[1])
                             ret[state.getID()] = visitedState
-        return [ret[k] for k in sorted(ret.keys())]
+            result += [ret[k] for k in sorted(ret.keys())]
+        return result
     
     def __uses(self, name):
         result = []
