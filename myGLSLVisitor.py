@@ -37,7 +37,7 @@ class expressionVisitor(ParseTreeVisitor):
         logging.debug(variables)
         self._setup = setup
         
-    def isTranform(self,space):
+    def isTransform(self,space):
         return len(space.split('.')) > 1
     
     def getTransform(self,t):
@@ -62,13 +62,15 @@ class expressionVisitor(ParseTreeVisitor):
     def resultingSpace(self, left, right, op):
         ret = "wrong"
         #A transform matrix can't be on the right
-        if(self.isTranform(right)):
+        if(self.isTransform(right) and op =="/" and left == "clip" and self.getTransformTo(right) == "NDC"):
+            ret = "NDC"
+        elif(self.isTransform(right)):
             ret = "wrong"
         elif left == right:
             ret = left
         elif "unknown" in [left,right]:
             ret = "unknown"
-        elif op == "*" and self.isTranform(left):
+        elif op == "*" and self.isTransform(left):
             ret =  self.resultingFromTransform(left,right)
         elif left == "constant":
             ret = right
@@ -120,18 +122,26 @@ class expressionVisitor(ParseTreeVisitor):
     
     def visitLeft_value_exp(self, ctx:GLSLParser.Left_value_expContext):
         leftValue = ctx.left_value()
+        hasW = False
         if(ctx.array_struct_selection() is not None):
             if len(ctx.array_struct_selection().struct_specifier()) > 0:
                 logging.debug(ctx.getText())
                 st = ctx.array_struct_selection().struct_specifier()[-1].accept(self)
                 if len(st) == 1:
-                    return "constant"
+                    if st[0] == "w":
+                        logging.debug("---------------------------hasW")
+                        hasW = True
+                    else: return "constant"
                 elif len(st) == 2:
                     return "wrong"
         if(leftValue.IDENTIFIER() is not None):
             #coord space of the variable stored in the dictionary
             if leftValue.IDENTIFIER().getText() in self._variables:
-                return self._variables[leftValue.IDENTIFIER().getText()][1] 
+                space = self._variables[leftValue.IDENTIFIER().getText()][1] 
+                if hasW:
+                    if space == "clip": return "transform.clip.NDC"
+                    return "constant"
+                return space
             else: return "constant"
         if(leftValue.function_call() is not None):
             return "unknown"
@@ -139,7 +149,7 @@ class expressionVisitor(ParseTreeVisitor):
     
     # Visit a parse tree produced by GLSLParser#struct_specifier.
     def visitStruct_specifier(self, ctx:GLSLParser.Struct_specifierContext):
-        return ctx.expression().getText()
+        return ctx.left_value_exp().getText()
     
     # Visit a parse tree produced by GLSLParser#constant_expression.
     def visitConstant_expression(self, ctx:GLSLParser.Constant_expressionContext):
@@ -152,7 +162,7 @@ class expressionVisitor(ParseTreeVisitor):
             for exp in ctx.expression():
                 space = exp.accept(self)
                 if(space == "wrong" or space == "unknown"): return space
-                elif self.isTranform(space): #transform matrix in there
+                elif self.isTransform(space): #transform matrix in there
                     return "wrong"
                 spaces.append(space)
             return self.resultingSpaceFromList(spaces)
