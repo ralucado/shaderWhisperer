@@ -122,6 +122,12 @@ class callGLSLListener(GLSLListener):
                 self.result.append(srcPoint(token.line, token.column))
         pass
     
+    def enterType_specifier_nonarray(self, ctx:GLSLParser.Type_specifier_nonarrayContext):
+        if(ctx.IDENTIFIER() != None):
+            token = ctx.IDENTIFIER().getSymbol();
+            if (self.name == token.text):
+                self.result.append(srcPoint(token.line, token.column))
+    
 class sentenceGLSLListener(GLSLListener):
     def __init__(self, name):
         self.name = name.strip().lower()

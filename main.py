@@ -1,4 +1,4 @@
-from shaderWhisperer import shaderWhisperer
+from shaderWhisperer import R, shaderWhisperer
 from Setup import Setup
 #TODO: add testing class
 def testSentences(sw):
@@ -12,7 +12,9 @@ def testExpressions(sw):
     
 def coordSpaces(sw):
     print("\n --- visitor testing\n")
-    print(" -> ", sw.coordSpaces("NW"))
+    print(sw.coordSpaces("LW"))
+    R("wrong coords", "wrong" in sw.coordSpaces("P"))
+    R("wrong coords", "wrong" in sw.coordSpaces("LW"))
     
 def testVisitorNoPrint(sw):
     print("\n --- visitor noprint testing\n")
@@ -61,16 +63,13 @@ def main():
     all = shaderWhisperer(["Shaders/allShaders/001.fs",  "Shaders/allShaders/006.fs",  "Shaders/allShaders/011.fs",  "Shaders/allShaders/016.fs",  "Shaders/allShaders/021.fs",  "Shaders/allShaders/026.fs",  "Shaders/allShaders/031.fs",  "Shaders/allShaders/036.fs",  "Shaders/allShaders/041.fs",  "Shaders/allShaders/046.fs",  "Shaders/allShaders/051.fs",  "Shaders/allShaders/057.vs", "Shaders/allShaders/001.vs",  "Shaders/allShaders/006.vs",  "Shaders/allShaders/011.vs",  "Shaders/allShaders/016.vs",  "Shaders/allShaders/021.vs",  "Shaders/allShaders/026.vs",  "Shaders/allShaders/031.vs",  "Shaders/allShaders/036.vs",  "Shaders/allShaders/041.vs",  "Shaders/allShaders/046.vs",  "Shaders/allShaders/054.vs",  "Shaders/allShaders/058.fs", "Shaders/allShaders/002.fs",  "Shaders/allShaders/007.fs",  "Shaders/allShaders/012.fs",  "Shaders/allShaders/017.fs",  "Shaders/allShaders/022.fs",  "Shaders/allShaders/027.fs",  "Shaders/allShaders/032.fs",  "Shaders/allShaders/037.fs",  "Shaders/allShaders/042.fs",  "Shaders/allShaders/047.fs",  "Shaders/allShaders/051.vs",  "Shaders/allShaders/055.fs", "Shaders/allShaders/002.vs",  "Shaders/allShaders/007.vs",  "Shaders/allShaders/012.vs",  "Shaders/allShaders/017.vs",  "Shaders/allShaders/022.vs",  "Shaders/allShaders/027.vs",  "Shaders/allShaders/032.vs",  "Shaders/allShaders/037.vs",  "Shaders/allShaders/042.vs",  "Shaders/allShaders/047.vs",  "Shaders/allShaders/052.fs",  "Shaders/allShaders/058.vs", "Shaders/allShaders/003.fs",  "Shaders/allShaders/008.fs",  "Shaders/allShaders/013.fs",  "Shaders/allShaders/018.fs",  "Shaders/allShaders/023.fs",  "Shaders/allShaders/028.fs",  "Shaders/allShaders/033.fs",  "Shaders/allShaders/038.fs",  "Shaders/allShaders/043.fs",  "Shaders/allShaders/048.fs",  "Shaders/allShaders/055.vs",  "Shaders/allShaders/059.fs", "Shaders/allShaders/003.vs",  "Shaders/allShaders/008.vs",  "Shaders/allShaders/013.vs",  "Shaders/allShaders/018.vs",  "Shaders/allShaders/023.vs",  "Shaders/allShaders/028.vs",  "Shaders/allShaders/033.vs",  "Shaders/allShaders/038.vs",  "Shaders/allShaders/043.vs",  "Shaders/allShaders/048.vs",  "Shaders/allShaders/052.vs",  "Shaders/allShaders/056.fs", "Shaders/allShaders/004.fs",  "Shaders/allShaders/009.fs",  "Shaders/allShaders/014.fs",  "Shaders/allShaders/019.fs",  "Shaders/allShaders/024.fs",  "Shaders/allShaders/029.fs",  "Shaders/allShaders/034.fs",  "Shaders/allShaders/039.fs",  "Shaders/allShaders/044.fs",  "Shaders/allShaders/049.fs",  "Shaders/allShaders/053.fs", "Shaders/allShaders/059.vs", "Shaders/allShaders/004.vs",  "Shaders/allShaders/009.vs",  "Shaders/allShaders/014.vs",  "Shaders/allShaders/019.vs",  "Shaders/allShaders/024.vs",  "Shaders/allShaders/029.vs",  "Shaders/allShaders/034.vs",  "Shaders/allShaders/039.vs",  "Shaders/allShaders/044.vs",  "Shaders/allShaders/049.vs", "Shaders/allShaders/056.vs",  "Shaders/allShaders/060.fs", "Shaders/allShaders/005.fs",  "Shaders/allShaders/010.fs",  "Shaders/allShaders/015.fs",  "Shaders/allShaders/020.fs",  "Shaders/allShaders/025.fs",  "Shaders/allShaders/030.fs",  "Shaders/allShaders/035.fs",  "Shaders/allShaders/040.fs",  "Shaders/allShaders/045.fs",  "Shaders/allShaders/050.fs",  "Shaders/allShaders/053.vs",  "Shaders/allShaders/057.fs", "Shaders/allShaders/005.vs",  "Shaders/allShaders/010.vs",  "Shaders/allShaders/015.vs",  "Shaders/allShaders/020.vs",  "Shaders/allShaders/025.vs",  "Shaders/allShaders/030.vs",  "Shaders/allShaders/035.vs",  "Shaders/allShaders/040.vs",  "Shaders/allShaders/045.vs",  "Shaders/allShaders/050.vs",  "Shaders/allShaders/054.fs", "Shaders/allShaders/060.vs"])
     errors = shaderWhisperer(["Shaders/allShaders/051.gs", "Shaders/allShaders/052.gs", "Shaders/allShaders/053.gs", "Shaders/allShaders/054.gs", "Shaders/allShaders/055.gs", "Shaders/allShaders/056.gs", "Shaders/allShaders/057.gs", "Shaders/allShaders/058.gs", "Shaders/allShaders/059.gs"])
     test =  shaderWhisperer(["Shaders/allShaders/032.vs"])
-    testArAss = shaderWhisperer(["Shaders/allShaders/052.gs", "Shaders/allShaders/056.gs",  "Shaders/allShaders/058.gs",  "Shaders/allShaders/060.gs"])
-    #testSentences(vsfs)
-    #testCalls(vsfs)
-    #testDecls(vsfs)
-    #testAssig(vsfs)
-    #testUses(vsfs)
-    #testIns(vsfs)
-    #testOuts(vsfs)
-    #testExpressions(vsfs)
-    #testArAss.setConstantCoordSpace("clip")
+    testSentences(vsfs)
+    testCalls(vsfs)
+    testDecls(vsfs)
+    testAssig(vsfs)
+    testUses(vsfs)
+    testIns(vsfs)
+    testOuts(vsfs)
     coordSpaces(test)
     #testVisitorNoPrint(all)
     

@@ -8,6 +8,11 @@ from myGLSLVisitor import *
 from Structs import *
 from Setup import Setup
 import logging
+
+def R(text, val):
+    if val:
+        print(text+":",val)
+
 class shaderWhisperer():
     def __init__(self, paths):
         self._sources = paths
@@ -27,14 +32,15 @@ class shaderWhisperer():
         tree = parser.prog()
         return tree
     
-    def __callListener(self, listener, name=None):
+    def __callListener(self, listener, name=None, joinResult=True):
         result = []
         for source in self._sources:
             tree = self.__getTree(source)
             printer =  listener(name) if (name != None) else listener()
             walker = ParseTreeWalker()
             walker.walk(printer, tree)
-            result.append(printer.result)
+            if joinResult: result += printer.result
+            else: result.append(printer.result)
         return result
     
     def __spaces(self, name=None):
@@ -72,9 +78,9 @@ class shaderWhisperer():
     
     def __uses(self, name):
         result = []
-        allInstances = self.__callListener(usesGLSLListener, name)
-        decls = self.declarations(name)
-        assigs = self.assignments(name)
+        allInstances = self.__callListener(usesGLSLListener, name, joinResult=False)
+        assigs = self.__callListener(assigGLSLListener, name, joinResult=False)
+        decls = self.__callListener(declGLSLListener, name, joinResult=False)
         for i in range(0,len(self._sources)):
             result.append([x for x in [y for y in allInstances[i] if y not in [item[1] for item in decls[i]]] if x not in assigs[i]])
         return result
@@ -82,7 +88,7 @@ class shaderWhisperer():
     
     def __storage(self, storage):
         #ins es [[(name, type, srcPos), ...], [...], ...]
-        ins = self.__callListener(storageGLSLListener, storage)
+        ins = self.__callListener(storageGLSLListener, storage, joinResult=False)
         res = []
         result = []
         for i in range(0,len(self._sources)):
@@ -91,7 +97,7 @@ class shaderWhisperer():
                 usesOrAssigns = self.uses(name) if storage == "in" else self.assignments(name)
                 usedOrAssigned = len(usesOrAssigns) > 0
                 res.append((name, type, pos, usedOrAssigned))
-            result.append(res)
+            result += res
         return result
      
     #Para cada variable in, se proporciona una tupla que indica: (id, type, pos, used)   
