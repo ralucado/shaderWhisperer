@@ -34,6 +34,7 @@ void main() {
 	  else P=modelViewProjectionMatrixInverse*P;
 	  float i = 9.0;
   }
+  vec3 ndcP = P.xyz/P.w;
   gl_Position = P;
   //mat4 blabla[][];
   //normal = normalMatrix*normal;
