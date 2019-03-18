@@ -17,7 +17,7 @@ uniform vec4 lightPosition;
 uniform mat4 modelViewProjectionMatrix;
 uniform mat4 modelViewMatrixInverse;
 uniform mat4 modelViewMatrix;
-uniform mat3 normalMatrix;
+uniform mat3 normalMatrix; //normals: object.eye
 
 
 void main() {
