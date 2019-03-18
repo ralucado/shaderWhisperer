@@ -87,26 +87,35 @@ class shaderWhisperer():
         return result
         
     
-    def __storage(self, storage):
+    def __storage(self, storage, types):
         #ins es [[(name, type, srcPos), ...], [...], ...]
-        ins = self.__callListener(storageGLSLListener, storage, joinResult=False)
-        res = []
-        result = []
-        for i in range(0,len(self._sources)):
+        listener = storageNameGLSLListener
+        if(types): listener = storageTypeGLSLListener
+        ins = self.__callListener(listener, storage)
+        #to calc uses or assigns
+        '''for i in range(0,len(self._sources)): 
             for (name, type, pos) in ins[i]:
                 #for inVars we search for usage, outVars we search for assignemnt
                 usesOrAssigns = self.uses(name) if storage == "in" else self.assignments(name)
                 usedOrAssigned = len(usesOrAssigns) > 0
                 res.append((name, type, pos, usedOrAssigned))
-            result += res
-        return result
+            result += res '''
+        return ins
      
-    #Para cada variable in, se proporciona una tupla que indica: (id, type, pos, used)   
-    def outVars(self):
-        return self.__storage("out")
+    
+    #Para cada variable in, se proporciona una tupla que indica: (type, pos)   
+    def outTypes(self):
+        return self.__storage("out", True)
         
-    def inVars(self):
-        return self.__storage("in")   
+    def inTypes(self):
+        return self.__storage("in", True)   
+    
+    def outNames(self):
+        return self.__storage("out", False)
+        
+    def inNames(self):
+        return self.__storage("in", False)   
+    
     
     def uses(self, name):
         return self.__uses(name)
