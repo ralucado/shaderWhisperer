@@ -50,6 +50,14 @@ def testUses(sw):
     print("i:   ", sw.uses("i"))
     print("normalMatrix:   ", sw.uses("normalMatrix"))
     
+def testNumUses(sw):
+    print("\n --- uses testing\n")
+    print("frontColor:   ", sw.numUses("frontColor"))
+    print("speed:   ", sw.numUses("speed"))
+    print("vertex:   ", sw.numUses("vertex"))
+    print("i:   ", sw.numUses("i"))
+    print("normalMatrix:   ", sw.numUses("normalMatrix"))
+    
 def testInTypes(sw):
     print("\n --- inType testing\n")
     print("in \t:", sw.inTypes())
@@ -78,11 +86,12 @@ def main():
     #testCalls(all)
     #testDecls(all)
     #testAssig(all)
-    #testUses(all)
-    testInTypes(all)
-    testInNames(all)
-    testOutTypes(all)
-    testOutNames(all)
+    testUses(all)
+    testNumUses(all)
+    #testInTypes(all)
+    #testInNames(all)
+    #testOutTypes(all)
+    #testOutNames(all)
     #test.setConstantCoordSpace("eye")
     #coordSpaces(all)
     #testVisitorNoPrint(all)

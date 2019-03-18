@@ -83,7 +83,7 @@ class shaderWhisperer():
         assigs = self.__callListener(assigGLSLListener, name, joinResult=False)
         decls = self.__callListener(declGLSLListener, name, joinResult=False)
         for i in range(0,len(self._sources)):
-            result.append([x for x in [y for y in allInstances[i] if y not in [item[1] for item in decls[i]]] if x not in assigs[i]])
+            result += [x for x in [y for y in allInstances[i] if y not in [item[1] for item in decls[i]]] if x not in assigs[i]]
         return result
         
     
@@ -116,7 +116,6 @@ class shaderWhisperer():
     def inNames(self):
         return self.__storage("in", False)   
     
-    
     def uses(self, name):
         return self.__uses(name)
         
@@ -138,11 +137,50 @@ class shaderWhisperer():
     def paramType(self, name, i=1):
         return self.__callListener(paramGLSLListener, name, i)
     
-    def expressions(self, name):
-        return self.__callListener(expressionGLSLListener, name)
-    
     def coordSpaces(self, name):
         return self.__spaces(name)
+    
+    
+    
+    
+    
+    def numOutTypes(self):
+        return len(self.outTypes())
+        
+    def numInTypes(self):
+        return len(self.inTypes())
+    
+    def numOutNames(self):
+        return len(self.outNames())
+        
+    def numInNames(self):
+        return len(self.inNames()) 
+    
+    def numUses(self, name):
+        return len(self.uses(name))
+        
+    def numAssignments(self, name):
+        return len(self.assignments(name))
+    
+    def numDeclarations(self, name):
+        return len(self.declarations(name))
+        
+    def numCalls(self, name):
+        return len(self.calls(name))
+    
+    def numSentences(self, name):
+        return len(self.sentences(name))
+    
+    def numParam(self, name, i=1):
+        return len(self.param(name, i))
+    
+    def numParamType(self, name, i=1):
+        return len(self.paramType(name, i))
+    
+    def numCoordSpaces(self, name):
+        return len(self.coordSpaces(name))
+    
+    
     
     def setConstantCoordSpace(self, space):
         self._setup.setConstantExpressionSpace(space)
