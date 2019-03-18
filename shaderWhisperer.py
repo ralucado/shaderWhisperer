@@ -32,11 +32,11 @@ class shaderWhisperer():
         tree = parser.prog()
         return tree
     
-    def __callListener(self, listener, name=None, joinResult=True):
+    def __callListener(self, listener, param=None, joinResult=True):
         result = []
         for source in self._sources:
             tree = self.__getTree(source)
-            printer =  listener(name) if (name != None) else listener()
+            printer =  listener(param) if (param != None) else listener()
             walker = ParseTreeWalker()
             walker.walk(printer, tree)
             if joinResult: result += printer.result
@@ -132,10 +132,10 @@ class shaderWhisperer():
         return self.__callListener(sentenceGLSLListener, name)
     
     def param(self, name, i=1):
-        return self.__callListener(paramGLSLListener, name, i)
+        return self.__callListener(paramGLSLListener, (name, i))
     
     def paramType(self, name, i=1):
-        return self.__callListener(paramGLSLListener, name, i)
+        return self.__callListener(paramGLSLListener, (name, i))
     
     def coordSpaces(self, name):
         return self.__spaces(name)
