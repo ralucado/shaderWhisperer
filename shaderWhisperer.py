@@ -32,11 +32,11 @@ class shaderWhisperer():
         tree = parser.prog()
         return tree
     
-    def __callListener(self, listener, name=None, joinResult=True):
+    def __callListener(self, listener, param=None, joinResult=True):
         result = []
         for source in self._sources:
             tree = self.__getTree(source)
-            printer =  listener(name) if (name != None) else listener()
+            printer =  listener(param) if (param != None) else listener()
             walker = ParseTreeWalker()
             walker.walk(printer, tree)
             if joinResult: result += printer.result
@@ -83,30 +83,38 @@ class shaderWhisperer():
         assigs = self.__callListener(assigGLSLListener, name, joinResult=False)
         decls = self.__callListener(declGLSLListener, name, joinResult=False)
         for i in range(0,len(self._sources)):
-            result.append([x for x in [y for y in allInstances[i] if y not in [item[1] for item in decls[i]]] if x not in assigs[i]])
+            result += [x for x in [y for y in allInstances[i] if y not in [item[1] for item in decls[i]]] if x not in assigs[i]]
         return result
         
     
-    def __storage(self, storage):
+    def __storage(self, storage, types):
         #ins es [[(name, type, srcPos), ...], [...], ...]
-        ins = self.__callListener(storageGLSLListener, storage, joinResult=False)
-        res = []
-        result = []
-        for i in range(0,len(self._sources)):
+        listener = storageNameGLSLListener
+        if(types): listener = storageTypeGLSLListener
+        ins = self.__callListener(listener, storage)
+        #to calc uses or assigns
+        '''for i in range(0,len(self._sources)): 
             for (name, type, pos) in ins[i]:
                 #for inVars we search for usage, outVars we search for assignemnt
                 usesOrAssigns = self.uses(name) if storage == "in" else self.assignments(name)
                 usedOrAssigned = len(usesOrAssigns) > 0
                 res.append((name, type, pos, usedOrAssigned))
-            result += res
-        return result
+            result += res '''
+        return ins
      
-    #Para cada variable in, se proporciona una tupla que indica: (id, type, pos, used)   
-    def outVars(self):
-        return self.__storage("out")
+    
+    #Para cada variable in, se proporciona una tupla que indica: (type, pos)   
+    def outTypes(self):
+        return self.__storage("out", True)
         
-    def inVars(self):
-        return self.__storage("in")   
+    def inTypes(self):
+        return self.__storage("in", True)   
+    
+    def outNames(self):
+        return self.__storage("out", False)
+        
+    def inNames(self):
+        return self.__storage("in", False)   
     
     def uses(self, name):
         return self.__uses(name)
@@ -124,16 +132,55 @@ class shaderWhisperer():
         return self.__callListener(sentenceGLSLListener, name)
     
     def param(self, name, i=1):
-        return self.__callListener(paramGLSLListener, name, i)
+        return self.__callListener(paramGLSLListener, (name, i))
     
     def paramType(self, name, i=1):
-        return self.__callListener(paramGLSLListener, name, i)
-    
-    def expressions(self, name):
-        return self.__callListener(expressionGLSLListener, name)
+        return self.__callListener(paramGLSLListener, (name, i))
     
     def coordSpaces(self, name):
         return self.__spaces(name)
+    
+    
+    
+    
+    
+    def numOutTypes(self):
+        return len(self.outTypes())
+        
+    def numInTypes(self):
+        return len(self.inTypes())
+    
+    def numOutNames(self):
+        return len(self.outNames())
+        
+    def numInNames(self):
+        return len(self.inNames()) 
+    
+    def numUses(self, name):
+        return len(self.uses(name))
+        
+    def numAssignments(self, name):
+        return len(self.assignments(name))
+    
+    def numDeclarations(self, name):
+        return len(self.declarations(name))
+        
+    def numCalls(self, name):
+        return len(self.calls(name))
+    
+    def numSentences(self, name):
+        return len(self.sentences(name))
+    
+    def numParam(self, name, i=1):
+        return len(self.param(name, i))
+    
+    def numParamType(self, name, i=1):
+        return len(self.paramType(name, i))
+    
+    def numCoordSpaces(self, name):
+        return len(self.coordSpaces(name))
+    
+    
     
     def setConstantCoordSpace(self, space):
         self._setup.setConstantExpressionSpace(space)

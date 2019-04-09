@@ -36,8 +36,8 @@ class declGLSLListener(GLSLListener):
         #simple_declarator --> left_value
         #store the variable name
         for ctxDeclarator in ctx.simple_declarator():
-            if(ctxDeclarator.getText() == self.name):
-                token = ctxDeclarator.getChild(0).getChild(0).getSymbol()
+            if(ctxDeclarator.left_value().IDENTIFIER().getText() == self.name):
+                token = ctxDeclarator.left_value().IDENTIFIER().getSymbol()
                 type = self._getType(ctx.type_specifier())
                 self.result.append((type,srcPoint(token.line, token.column)))
         pass
@@ -47,11 +47,9 @@ class declGLSLListener(GLSLListener):
 class storageGLSLListener(declGLSLListener):
 #TODO: change names that refer to tokens to the actual
 # GLSLParser.token type and check them
-    def __init__(self, name):
+    def __init__(self, name, type):
         self.name = name #in, out
-        self.varName = None
-        self.pos = None
-        self.type = None
+        self.type = type
         self.result = []
         
     def enterSimple_declaration(self, ctx:GLSLParser.Simple_declarationContext):
@@ -59,23 +57,24 @@ class storageGLSLListener(declGLSLListener):
         if(ctx.type_qualifier() != None):
             ctxTypeQualifier = ctx.type_qualifier()
             storageCtxs = ctxTypeQualifier.storage_qualifier()
+            pos = None
+            type = None
             for ctxStorageQualifier in storageCtxs:
                 token = ctxStorageQualifier.getChild(0).getSymbol()
                 if(token.text == self.name):
-                    self.pos = srcPoint(token.line, token.column)
+                    pos = srcPoint(token.line, token.column)
                     break
                 
-            if(self.pos != None):
+            if(pos != None):
                 #we have found a storage qualifier that matches
-                #store type using parent class getType function
-                self.type = self._getType(ctx.type_specifier())
-                
-                #store the variable name
-                for ctxDeclarator in ctx.simple_declarator():
-                    self.result.append((ctxDeclarator.getText(), self.type, self.pos))
-                    
-                self.pos = None
-                self.type = None     
+                if(self.type):
+                    #store type using parent class getType function
+                    type = self._getType(ctx.type_specifier())
+                    self.result.append((type, pos))
+                else:
+                    #store the variable name
+                    for ctxDeclarator in ctx.simple_declarator():
+                        self.result.append((ctxDeclarator.getText(), pos))   
         pass
     
     #override parent listener
@@ -83,6 +82,24 @@ class storageGLSLListener(declGLSLListener):
         pass
     
     
+class storageNameGLSLListener(storageGLSLListener):
+#TODO: change names that refer to tokens to the actual
+# GLSLParser.token type and check them
+    def __init__(self, name):
+        self.name = name #in, out
+        self.type = False
+        self.result = []
+        
+        
+class storageTypeGLSLListener(storageGLSLListener):
+#TODO: change names that refer to tokens to the actual
+# GLSLParser.token type and check them
+    def __init__(self, name):
+        self.name = name #in, out
+        self.type = True
+        self.result = []
+        
+        
 class usesGLSLListener(GLSLListener):
     def __init__(self, name):
         self.name = name #var name
@@ -117,16 +134,72 @@ class callGLSLListener(GLSLListener):
     # Enter a parse tree produced by GLSLParser#function_call.
     def enterFunction_call(self, ctx:GLSLParser.Function_callContext):
         if(ctx.function_name().IDENTIFIER() != None):
-            token = ctx.function_name().IDENTIFIER().getSymbol();
+            token = ctx.function_name().IDENTIFIER().getSymbol()
             if (self.name == token.text):
                 self.result.append(srcPoint(token.line, token.column))
         pass
     
     def enterType_specifier_nonarray(self, ctx:GLSLParser.Type_specifier_nonarrayContext):
         if(ctx.IDENTIFIER() != None):
-            token = ctx.IDENTIFIER().getSymbol();
+            token = ctx.IDENTIFIER().getSymbol()
             if (self.name == token.text):
                 self.result.append(srcPoint(token.line, token.column))
+                
+                
+    def enterBasic_type_exp(self, ctx:GLSLParser.Basic_type_expContext):
+        if(ctx.basic_type() is not None):
+            token = None
+            if(ctx.basic_type().scala_type() is not None):
+                token = ctx.basic_type().scala_type().SCALA().getSymbol()
+            elif(ctx.basic_type().vector_type() is not None):
+                token = ctx.basic_type().vector_type().VECTOR().getSymbol()
+            elif(ctx.basic_type().matrix_type() is not None):
+                token = ctx.basic_type().matrix_type().MATRIX().getSymbol()
+            if(token is not None and token.text == self.name):
+                self.result.append(srcPoint(token.line, token.column))
+                
+                
+class paramGLSLListener(GLSLListener):
+    def __init__(self, tup):
+        #tup = (name, i)
+        self.name = tup[0]
+        self.i = tup[1] - 1
+        self.result = []
+            
+    # Enter a parse tree produced by GLSLParser#function_call.
+    def enterFunction_call(self, ctx:GLSLParser.Function_callContext):
+        if(ctx.function_name().IDENTIFIER() != None):
+            token = ctx.function_name().IDENTIFIER().getSymbol()
+            if (self.name == token.text):
+                expression = ctx.expression(self.i)
+                if expression is not None:
+                    self.result.append(expression.getText())
+        pass
+    
+    def enterSimple_declaration(self, ctx:GLSLParser.Simple_declarationContext):
+        fname = ctx.type_specifier()
+        if(self.i == 0 and fname is not None):
+            fname = fname.type_specifier_nonarray()
+            if(fname is not None and fname.IDENTIFIER() is not None):
+                token = fname.IDENTIFIER().getSymbol()
+                if (self.name == token.text):
+                    self.result.append(ctx.simple_declarator(0).left_value().expression().getText())
+        pass        
+                
+    def enterBasic_type_exp(self, ctx:GLSLParser.Basic_type_expContext):
+        if(ctx.basic_type() is not None):
+            token = None
+            if(ctx.basic_type().scala_type() is not None):
+                token = ctx.basic_type().scala_type().SCALA().getSymbol()
+            elif(ctx.basic_type().vector_type() is not None):
+                token = ctx.basic_type().vector_type().VECTOR().getSymbol()
+            elif(ctx.basic_type().matrix_type() is not None):
+                token = ctx.basic_type().matrix_type().MATRIX().getSymbol()
+            if(token is not None and token.text == self.name):
+                expression = ctx.expression(self.i)
+                if(expression is not None):
+                    self.result.append(expression.getText())
+        pass
     
 class sentenceGLSLListener(GLSLListener):
     def __init__(self, name):
