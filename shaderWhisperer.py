@@ -12,8 +12,7 @@ from Structs import *
 
 
 def R(text, val):
-    if val:
-        print(text+":",val)
+    print(text+":",val)
 
 class shaderWhisperer():
     def __init__(self, paths):
