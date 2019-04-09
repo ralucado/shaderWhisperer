@@ -1,16 +1,15 @@
+import logging
+from copy import deepcopy
+
 from antlr4 import *
 from antlr4.tree.Tree import TerminalNode
-from GLSLParser import GLSLParser
-import logging
+
+from build.classes.GLSLParser import GLSLParser
+from build.classes.GLSLVisitor import *
 from Setup import Setup
-from copy import deepcopy
-if __name__ is not None and "." in __name__:
-    from .build.classes.GLSLVisitor import *
-    from .Structs import *
-else:
-    from build.classes.GLSLVisitor  import *
-    from Structs import *
-    
+from Structs import *
+
+
 class funcDefVisitor(ParseTreeVisitor):
     
     # Visit a parse tree produced by GLSLParser#statement_list.
@@ -252,7 +251,7 @@ class statementVisitor(ParseTreeVisitor):
                         space = "unknown"
                         if(id.assignment_expression() is not None):
                             vis = expressionVisitor(self._currentState.vars, self._setup)
-                            space=vis.visitChildren(id.assignment_expression())
+                            space = vis.visitChildren(id.assignment_expression())
                             logging.debug(id.assignment_expression().getText())
                             logging.debug(space)
                         self._currentState.vars[nameString] = (typeString, space)
@@ -460,4 +459,3 @@ class statementVisitor(ParseTreeVisitor):
     def visitBasic_type(self, ctx:GLSLParser.Basic_typeContext):
         return ctx.getText()
     """
-  

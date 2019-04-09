@@ -1,5 +1,7 @@
-from shaderWhisperer import R, shaderWhisperer
 from Setup import Setup
+from shaderWhisperer import R, shaderWhisperer
+
+
 #TODO: add testing class
 def testSentences(sw):
     print("\n --- sentences testing\n")
@@ -73,7 +75,14 @@ def testInNames(sw):
 def testOutNames(sw):
     print("\n --- outName testing\n")
     print("out \t:", sw.outNames())
-    
+
+def testFieldSelectors(sw):
+    print("\n --- swizzle names testing\n")
+    print("x \t:", sw.fieldSelectors("x"))
+    print("z \t:", sw.fieldSelectors("z"))
+    print("xz \t:", sw.fieldSelectors("xz"))
+    print("w \t:", sw.fieldSelectors("w"))
+
 def main():
     fs = shaderWhisperer(["Shaders/test.frag"])
     vs = shaderWhisperer(["Shaders/test.vert"])
@@ -86,8 +95,8 @@ def main():
     #testCalls(all)
     #testDecls(all)
     #testAssig(all)
-    testUses(all)
-    testNumUses(all)
+    #testUses(all)
+    #testNumUses(all)
     #testInTypes(all)
     #testInNames(all)
     #testOutTypes(all)
@@ -95,6 +104,7 @@ def main():
     #test.setConstantCoordSpace("eye")
     #coordSpaces(all)
     #testVisitorNoPrint(all)
+    testFieldSelectors(vs)
     
 if __name__ == '__main__':
     main()
