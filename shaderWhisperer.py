@@ -1,17 +1,18 @@
+import logging
 import sys
+
 from antlr4 import *
+
 from build.classes.GLSLLexer import GLSLLexer
 from build.classes.GLSLParser import GLSLParser
-from Structs import *
 from myGLSLListener import *
 from myGLSLVisitor import *
-from Structs import *
 from Setup import Setup
-import logging
+from Structs import *
+
 
 def R(text, val):
-    if val:
-        print(text+":",val)
+    print(text+":",val)
 
 class shaderWhisperer():
     def __init__(self, paths):
@@ -55,8 +56,8 @@ class shaderWhisperer():
                 if foo == "main":
                     mainCtx = st_list
             if mainCtx is None:
-                logging.error("Error: No main function: "+str(self._sources[filename])+"\n")
-                return NULL
+                logging.error("Error: No main function: "+str(source)+"\n")
+                return None
             
             visitor = statementVisitor(self._setup)
             visitor.visit(tree)
@@ -140,6 +141,11 @@ class shaderWhisperer():
     def coordSpaces(self, name):
         return self.__spaces(name)
     
+    def fieldSelectors(self, name):
+        return self.__callListener(swizzleNameGLSLListener, name)
+
+    def fieldSelectorsTypes(self, name):
+        return self.__callListener(swizzleTypeGLSLListener, name)
     
     
     
@@ -190,7 +196,3 @@ class shaderWhisperer():
         for varname in defaultVars.keys():
             vars.pop(varname, None)
         return vars
-    
-        
-    
-    

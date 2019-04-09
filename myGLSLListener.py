@@ -1,13 +1,36 @@
 from antlr4 import *
-from GLSLParser import GLSLParser
-if __name__ is not None and "." in __name__:
-    from .build.classes.GLSLListener import *
-    from .Structs import *
-else:
-    from build.classes.GLSLListener  import *
-    from Structs import *
+
+from build.classes.GLSLListener import *
+from build.classes.GLSLParser import GLSLParser
+from Structs import *
 
 
+class swizzleNameGLSLListener(GLSLListener):
+    def __init__(self, name):
+        self.name = list(name) #swizzle name
+        self.lastVar = ""
+        self.result = []
+
+    # Enter a parse tree produced by GLSLParser#array_struct_selection.
+    def enterArray_struct_selection(self, ctx:GLSLParser.Array_struct_selectionContext):
+        if ctx.struct_specifier() is not None:
+            for struct_specifier in ctx.struct_specifier():
+                swizzle = list(struct_specifier.left_value_exp().left_value().getText())
+                if all(elem in swizzle for elem in self.name):
+                    if self.lastVar == "": print("NOOOO")
+                    token = struct_specifier.DOT().getSymbol()
+                    self.result.append((self.lastVar, srcPoint(token.line, token.column)))
+                    self.lastVar = ""
+                    break
+
+    def enterLeft_value_exp(self, ctx:GLSLParser.Left_value_expContext):
+        self.lastVar = ctx.left_value().getText()
+
+
+class swizzleTypeGLSLListener(GLSLListener):
+    def __init__(self, name):
+        self.name = name #swizzle name
+        self.result = []
 
 class declGLSLListener(GLSLListener):
     def __init__(self, name):

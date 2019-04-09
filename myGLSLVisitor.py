@@ -1,16 +1,15 @@
+import logging
+from copy import deepcopy
+
 from antlr4 import *
 from antlr4.tree.Tree import TerminalNode
-from GLSLParser import GLSLParser
-import logging
+
+from build.classes.GLSLParser import GLSLParser
+from build.classes.GLSLVisitor import *
 from Setup import Setup
-from copy import deepcopy
-if __name__ is not None and "." in __name__:
-    from .build.classes.GLSLVisitor import *
-    from .Structs import *
-else:
-    from build.classes.GLSLVisitor  import *
-    from Structs import *
-    
+from Structs import *
+
+
 class funcDefVisitor(ParseTreeVisitor):
     
     # Visit a parse tree produced by GLSLParser#statement_list.
@@ -129,7 +128,7 @@ class expressionVisitor(ParseTreeVisitor):
                 st = ctx.array_struct_selection().struct_specifier()[-1].accept(self)
                 if len(st) == 1:
                     if st[0] == "w":
-                        logging.debug("---------------------------hasW")
+                        #logging.debug("---------------------------hasW")
                         hasW = True
                     else: return "constant"
                 elif len(st) == 2:
@@ -252,7 +251,7 @@ class statementVisitor(ParseTreeVisitor):
                         space = "unknown"
                         if(id.assignment_expression() is not None):
                             vis = expressionVisitor(self._currentState.vars, self._setup)
-                            space=vis.visitChildren(id.assignment_expression())
+                            space = vis.visitChildren(id.assignment_expression())
                             logging.debug(id.assignment_expression().getText())
                             logging.debug(space)
                         self._currentState.vars[nameString] = (typeString, space)
@@ -367,97 +366,3 @@ class statementVisitor(ParseTreeVisitor):
         self.machineStates = afterBodyStates + originalStates
         #post = ctx.for_rest_statement()
         return ("for", stat)
-    
-    """
-    def visitFor_init_statement(self, ctx:GLSLParser.For_init_statementContext):
-        return ("init st.", self.visitChildren(ctx))
-    
-    
-    def visitFor_cond_statement(self, ctx:GLSLParser.For_cond_statementContext):
-        return ("condition", self.visitChildren(ctx))
-
-    def visitFor_rest_statement(self, ctx:GLSLParser.For_rest_statementContext):
-        return ("rest", self.visitChildren(ctx))
-            
-   # Visit a parse tree produced by GLSLParser#continue.
-    def visitContinue(self, ctx:GLSLParser.ContinueContext):
-        return  "cont."
-    
-    # Visit a parse tree produced by GLSLParser#break.
-    def visitBreak(self, ctx:GLSLParser.BreakContext):
-        return "break"
-
-    # Visit a parse tree produced by GLSLParser#return.
-    def visitReturn(self, ctx:GLSLParser.ReturnContext):
-        return "return"
-    
-    
-        # Visit a parse tree produced by GLSLParser#shift.
-    def visitShift(self, ctx:GLSLParser.ShiftContext):
-        return "shift op expr"
-
-
-    # Visit a parse tree produced by GLSLParser#cmp.
-    def visitCmp(self, ctx:GLSLParser.CmpContext):
-        return "cmp op expr"
-
-
-    # Visit a parse tree produced by GLSLParser#sign.
-    def visitSign(self, ctx:GLSLParser.SignContext):
-        return "sign op expr"
-
-
-    # Visit a parse tree produced by GLSLParser#addsub.
-    def visitAddsub(self, ctx:GLSLParser.AddsubContext):
-        return "add or sub expr"
-
-
-    # Visit a parse tree produced by GLSLParser#unary.
-    def visitUnary(self, ctx:GLSLParser.UnaryContext):
-        return "unary op expr"
-
-
-    # Visit a parse tree produced by GLSLParser#eq.
-    def visitEq(self, ctx:GLSLParser.EqContext):
-        return "equality expr"
-
-
-    # Visit a parse tree produced by GLSLParser#preIncrement.
-    def visitPreIncrement(self, ctx:GLSLParser.PreIncrementContext):
-        return "pre incr expr"
-
-
-    # Visit a parse tree produced by GLSLParser#muldiv.
-    def visitMuldiv(self, ctx:GLSLParser.MuldivContext):
-        return "mul or div expr"
-
-
-    # Visit a parse tree produced by GLSLParser#bitwise.
-    def visitBitwise(self, ctx:GLSLParser.BitwiseContext):
-        return "bitwise operator expr"
-
-
-    # Visit a parse tree produced by GLSLParser#postIncrement.
-    def visitPostIncrement(self, ctx:GLSLParser.PostIncrementContext):
-        return "post inrement expr"
-
-
-    # Visit a parse tree produced by GLSLParser#logic.
-    def visitLogic(self, ctx:GLSLParser.LogicContext):
-        return "logical expr"
-
-
-    # Visit a parse tree produced by GLSLParser#ternary.
-    def visitTernary(self, ctx:GLSLParser.TernaryContext):
-        return "ternary expr"
-
-
-    # Visit a parse tree produced by GLSLParser#primary.
-    def visitPrimary(self, ctx:GLSLParser.PrimaryContext):
-        return "primary expr"
-
-        # Visit a parse tree produced by GLSLParser#basic_type.
-    def visitBasic_type(self, ctx:GLSLParser.Basic_typeContext):
-        return ctx.getText()
-    """
-  

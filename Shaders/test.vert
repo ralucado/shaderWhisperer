@@ -21,7 +21,7 @@ void main() {
   //vec3 micolo, tucolo = vec3(0,0,0);
   //tucolo = lightPosition;
   //micolo = boundingBoxMin;
-  vec3 P = modelViewProjectionMatrix*vec4(vertex,1);
+  vec4 P = modelViewProjectionMatrix*vec4(vertex.xyz,1);
   vec3 N = normal;
   while (a>0){
 	  P+=N;
@@ -29,7 +29,7 @@ void main() {
   }
   if(a>0){
 	  if(a<0){
-	      P=projectionMatrixInverse*P;
+	      P=projectionMatrixInverse*P.xyzw;
 	  }
 	  else P=modelViewProjectionMatrixInverse*P;
 	  float i = 9.0;
