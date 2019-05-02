@@ -24,7 +24,7 @@ class srcInterval():
     
     def __eq__(self, other):
         if(isinstance(other, srcInterval)):
-            return (self.x == other.x and self.y == other.y)
+            return (self.start == other.start and self.end == other.end)
         return False
     #TODO: def len?
     
