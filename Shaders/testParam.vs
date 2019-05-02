@@ -19,5 +19,5 @@ void main() {
   normalize(normal);
   vtexCoord.s += time * speed;
   vtexCoord.t = time + vec3(1,0,0);
-  gl_Position=modelViewProjectionMatrix*vec4(vertex.xyz,1);
+  gl_Position=modelViewProjectionMatrix*vec4(vertex.x,vertex.yz,1);
 }
