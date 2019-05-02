@@ -36,6 +36,7 @@ class shaderWhisperer():
     def __callListener(self, listener, param=None, joinResult=True):
         result = []
         for source in self._sources:
+            #logging.debug("-------- Source: " + source + "----------")
             tree = self.__getTree(source)
             printer =  listener(param) if (param != None) else listener()
             walker = ParseTreeWalker()
@@ -133,19 +134,19 @@ class shaderWhisperer():
         return self.__callListener(sentenceGLSLListener, name)
     
     def param(self, name, i=1):
-        return self.__callListener(paramGLSLListener, (name, i))
+        return self.__callListener(paramNameGLSLListener, (name, i, self._setup))
     
     def paramType(self, name, i=1):
-        return self.__callListener(paramGLSLListener, (name, i))
+        return self.__callListener(paramTypeGLSLListener, (name, i, self._setup))
     
     def coordSpaces(self, name):
         return self.__spaces(name)
     
     def fieldSelectors(self, name):
-        return self.__callListener(swizzleNameGLSLListener, name)
+        return self.__callListener(swizzleNameGLSLListener, (name, self._setup))
 
     def fieldSelectorsTypes(self, name):
-        return self.__callListener(swizzleTypeGLSLListener, name)
+        return self.__callListener(swizzleTypeGLSLListener, (name, self._setup))
     
     
     

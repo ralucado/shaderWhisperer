@@ -32,6 +32,9 @@ def testCalls(sw):
     print("fract:        ", sw.calls("fract"))
     print("normalize:    ", sw.calls("normalize"))
     print("vec3:    ", sw.calls("vec3"))
+    print("*:    ", sw.calls("*"))
+    print("+:    ", sw.calls("+"))
+    print("/:    ", sw.calls("/"))
 
 def testDecls(sw):
     print("\n --- decl testing\n")
@@ -77,15 +80,32 @@ def testOutNames(sw):
     print("out \t:", sw.outNames())
     
 def testParam(sw):
-    print("\n --- param testing\n")
+    print("\n --- param name testing\n")
     print("vec4 \t:", sw.param("vec4"))
     print("vec4, 2\t:", sw.param("vec4", 2))
     print("mix, 2\t:", sw.param("mix", 2))
+    print("mix, 3\t:", sw.param("mix", 3))
+    print("+, 1\t:", sw.param("+", 1))
+    print("+, 2\t:", sw.param("+", 2))
+    print("*, 1\t:", sw.param("*", 1))
+    print("*, 2\t:", sw.param("*", 2))
+    print("/, 1\t:", sw.param("/", 1))
+    print("/, 2\t:", sw.param("/", 2))
     print("normalize \t:", sw.param("normalize"))
 
-
-
-    
+def testParamTypes(sw):
+    print("\n --- param type testing\n")
+    print("vec4 \t:", sw.paramType("vec4"))
+    print("vec4, 2\t:", sw.paramType("vec4", 2))
+    print("mix, 2\t:", sw.paramType("mix", 2))
+    print("mix, 3\t:", sw.paramType("mix", 3))
+    print("+, 1\t:", sw.paramType("+", 1))
+    print("+, 2\t:", sw.paramType("+", 2))
+    print("*, 1\t:", sw.paramType("*", 1))
+    print("*, 2\t:", sw.paramType("*", 2))
+    print("/, 1\t:", sw.paramType("/", 1))
+    print("/, 2\t:", sw.paramType("/", 2))
+    print("normalize \t:", sw.paramType("normalize"))
 
 def testFieldSelectors(sw):
     print("\n --- swizzle names testing\n")
@@ -93,6 +113,13 @@ def testFieldSelectors(sw):
     print("z \t:", sw.fieldSelectors("z"))
     print("xz \t:", sw.fieldSelectors("xz"))
     print("w \t:", sw.fieldSelectors("w"))
+
+def testFieldSelectorsTypes(sw):
+    print("\n --- swizzle types testing\n")
+    print("x \t:", sw.fieldSelectorsTypes("x"))
+    print("z \t:", sw.fieldSelectorsTypes("z"))
+    print("xz \t:", sw.fieldSelectorsTypes("xz"))
+    print("w \t:", sw.fieldSelectorsTypes("w"))
 
 def main():
     fs = shaderWhisperer(["Shaders/test.frag"])
@@ -109,7 +136,8 @@ def main():
     #testAssig(all)
     #testUses(all)
     #testNumUses(all)
-    testParam(all)
+    #testParam(all)
+    #testParamTypes(all)
     #testUses(all)
     #testNumUses(all)
     #testInTypes(all)
@@ -119,7 +147,8 @@ def main():
     #test.setConstantCoordSpace("eye")
     #coordSpaces(all)
     #testVisitorNoPrint(all)
-    testFieldSelectors(vs)
+    #testFieldSelectors(all)
+    #testFieldSelectorsTypes(all)
     
 if __name__ == '__main__':
     main()

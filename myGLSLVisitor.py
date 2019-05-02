@@ -9,6 +9,118 @@ from build.classes.GLSLVisitor import *
 from Setup import Setup
 from Structs import *
 
+class typeVisitor(GLSLVisitor):
+    def __init__(self, variables):
+        self.variables = variables
+        self.lastValueType = None
+
+    def aggregateResult(self, aggregate, nextResult):
+        if nextResult is not None:
+            return nextResult
+        return aggregate
+
+    def __findVar(self, name):
+        for i in reversed(range(len(self.variables))):
+            ret = self.variables[i].get(name)
+            if(ret is not None):
+                return ret
+        logging.debug("Could not find var or func "+name+". Returning None")
+        return None
+
+    # Visit a parse tree produced by GLSLParser#function_call.
+    def visitFunction_call(self, ctx:GLSLParser.Function_callContext):
+        #check if the function is defined by the user
+        funcName = ctx.function_name().IDENTIFIER().getText()
+        ret = self.__findVar('func.'+funcName)
+        #logging.debug('func.'+funcName)
+        if(ret is not None): 
+            if ret == 'genType':
+                #same as type of the first argument
+                return ctx.expression(0).accept(self)
+            elif ret == 'boolType':
+                #bool version of the type of the first argument
+                argType = ctx.expression(0).accept(self)
+                return "bvec"+argType[-1]
+            return ret
+        else:
+            logging.debug("Function "+funcName+" is not defined or returns void.")
+        return 'void'
+
+    # Visit a parse tree produced by GLSLParser#muldiv.
+    def visitMuldiv(self, ctx:GLSLParser.MuldivContext):
+        left = ctx.expression(0).accept(self)
+        right = ctx.expression(1).accept(self)
+        if('mat' in left):
+             return right
+        elif('vec' in right):
+            return right
+        elif('float' in right or 'float' in left):
+            return 'float'
+        return left
+
+    # Enter a parse tree produced by GLSLParser#array_struct_selection.
+    def visitArray_struct_selection(self, ctx:GLSLParser.Array_struct_selectionContext):
+        if ctx.struct_specifier() is not None:
+            for struct_specifier in ctx.struct_specifier():
+                swizzle = list(struct_specifier.left_value_exp().left_value().getText())
+                dataType = self.lastValueType
+                if('vec' in dataType):
+                    dataType = list(self.lastValueType) #convert to list
+                    if(len(swizzle) == 1): #return type is basic type
+                        if(len(dataType) == 5): #ivecX, bvecX
+                            return 'int' if dataType[0] == 'i' else 'bool'
+                        elif(len(dataType) == 4): #vecX
+                            return 'float'
+                    else: #type is smaller vector
+                        dataType[-1] = str(len(swizzle))
+                        return ''.join(dataType)  #convert type back to string             
+                #TODO:this could check for user defined structs too
+        pass
+
+    
+    # Visit a parse tree produced by GLSLParser#cmp.
+    def visitCmp(self, ctx:GLSLParser.CmpContext):
+        return 'bool'
+    
+    # Visit a parse tree produced by GLSLParser#cmp.
+    def visitEq(self, ctx:GLSLParser.EqContext):
+        return 'bool'
+
+    # Visit a parse tree produced by GLSLParser#integer.
+    def visitInteger(self, ctx:GLSLParser.IntegerContext):
+        return 'int'
+    
+    # Visit a parse tree produced by GLSLParser#float_num.
+    def visitFloat_num(self, ctx:GLSLParser.Float_numContext):
+        return 'float'
+    
+    # Visit a parse tree produced by GLSLParser#bool_num.
+    def visitBool_num(self, ctx:GLSLParser.Bool_numContext):
+        return 'bool'
+    
+    # Visit a parse tree produced by GLSLParser#unary.
+    def visitUnary(self, ctx:GLSLParser.UnaryContext):
+        if(ctx.UNARY_OP().getText() == '!'):
+            return 'bool'
+        return ctx.expression().accept(self)
+    
+    # Visit a parse tree produced by GLSLParser#basic_type_exp.
+    def visitBasic_type_exp(self, ctx:GLSLParser.Basic_type_expContext):
+        return ctx.basic_type().getText()
+
+    # Visit a parse tree produced by GLSLParser#basic_type.
+    def visitBasic_type(self, ctx:GLSLParser.Basic_typeContext):
+        return ctx.getText()
+
+    # Visit a parse tree produced by GLSLParser#left_value.
+    def visitLeft_value(self, ctx:GLSLParser.Left_valueContext):
+        if(ctx.IDENTIFIER() is not None):
+            ret = self.__findVar(ctx.IDENTIFIER().getText())
+        else:
+            ret = self.visitChildren(ctx)
+        self.lastValueType = ret
+        return ret
+
 
 class funcDefVisitor(ParseTreeVisitor):
     
@@ -359,10 +471,10 @@ class statementVisitor(ParseTreeVisitor):
     # Visit a parse tree produced by GLSLParser#for.
     def visitFor(self, ctx:GLSLParser.ForContext):
         #init = ctx.for_init_statement().accept(self)
-        cond = ctx.for_cond_statement().accept(self)
+        ctx.for_cond_statement().accept(self)
         originalStates = deepcopy(self.machineStates)
         stat_s = ctx.statement().accept(self)
         afterBodyStates = deepcopy(self.machineStates)
         self.machineStates = afterBodyStates + originalStates
         #post = ctx.for_rest_statement()
-        return ("for", stat)
+        return ("for", stat_s)
