@@ -39,11 +39,98 @@ class Setup():
         vars[configVars['ModelViewProjection_Inverse_Matrix']] = ('mat4','transform.clip.object')
         vars[configVars['Vertex']] = ('vec3','object')
         vars[configVars['Normal']] = ('vec3','object')
+        vars[configVars['Normal_Matrix']] = ('mat3','transform.object.eye')
         vars[configVars['BoundingBox_Min']] = ('vec3','object')
         vars[configVars['BoundingBox_Max']] = ('vec3','object')
         vars[configVars['Light_Position']] = ('vec4','eye')
+
+        vars['glPosition'] = 'vec4'
+
         return vars
-    
+
+    def getBuiltins(self):
+        builtins = {}
+
+        configVars = self._config['VARIABLES']
+        builtins[configVars['Model_Matrix']] = 'mat4'
+        builtins[configVars['View_Matrix']] = 'mat4'
+        builtins[configVars['Projection_Matrix']] = 'mat4'
+        builtins[configVars['ModelView_Matrix']] = 'mat4'
+        builtins[configVars['ModelViewProjection_Matrix']] = 'mat4'
+        builtins[configVars['Model_Inverse_Matrix']] = 'mat4'
+        builtins[configVars['View_Inverse_Matrix']] = 'mat4'
+        builtins[configVars['Projection_Inverse_Matrix']] = 'mat4'
+        builtins[configVars['ModelView_Inverse_Matrix']] = 'mat4'
+        builtins[configVars['ModelViewProjection_Inverse_Matrix']] = 'mat4'
+        builtins[configVars['Vertex']] = 'vec3'
+        builtins[configVars['Normal']] = 'vec3'
+        builtins[configVars['Normal_Matrix']] = 'mat3'
+        builtins[configVars['BoundingBox_Min']] = 'vec3'
+        builtins[configVars['BoundingBox_Max']] = 'vec3'
+        builtins[configVars['Light_Position']] = 'vec4'
+
+        builtins['gl_Position'] = 'vec4'
+        builtins['gl_PointSize'] = 'float'
+        builtins['gl_FragCoord'] = 'vec4'
+        builtins['gl_FrontFacing'] = 'bool'
+        builtins['gl_PointCoord'] = 'int'
+        builtins['gl_FragColor'] = 'vec4'
+
+        builtins['func.radians'] = 'genType'
+        builtins['func.degrees'] = 'genType'
+        builtins['func.sin'] = 'genType'
+        builtins['func.cos'] = 'genType'
+        builtins['func.tan'] = 'genType'
+        builtins['func.asin'] = 'genType'
+        builtins['func.acos'] = 'genType'
+        builtins['func.atan'] = 'genType'
+        builtins['func.pow'] = 'genType'
+        builtins['func.exp'] = 'genType'
+        builtins['func.log'] = 'genType'
+        builtins['func.exp2'] = 'genType'
+        builtins['func.log2'] = 'genType'
+        builtins['func.sqrt'] = 'genType'
+        builtins['func.inversesqrt'] = 'genType'
+        builtins['func.abs'] = 'genType'
+        builtins['func.sign'] = 'genType'
+        builtins['func.floor'] = 'genType'
+        builtins['func.ceil'] = 'genType'
+        builtins['func.fract'] = 'genType'
+        builtins['func.mod'] = 'genType'
+        builtins['func.min'] = 'genType'
+        builtins['func.max'] = 'genType'
+        builtins['func.clamp'] = 'genType'
+        builtins['func.mix'] = 'genType'
+        builtins['func.step'] = 'genType'
+        builtins['func.smoothstep'] = 'genType'
+        builtins['func.length'] = 'float'
+        builtins['func.distance'] = 'float'
+        builtins['func.dot'] = 'float'
+        builtins['func.cross'] = 'vec3'
+        builtins['func.normalize'] = 'genType'
+        builtins['func.faceforward'] = 'genType'
+        builtins['func.reflect'] = 'genType'
+        builtins['func.refract'] = 'genType'
+        builtins['func.matrixCompMult'] = 'genType'
+        builtins['func.lessThan'] = 'boolType'
+        builtins['func.lessThanEqual'] = 'boolType'
+        builtins['func.greaterThan'] = 'boolType'
+        builtins['func.greaterThanEqual'] = 'boolType'
+        builtins['func.equal'] = 'boolType'
+        builtins['func.notEqual'] = 'boolType'
+        builtins['func.any'] = 'bool'
+        builtins['func.all'] = 'bool'
+        builtins['func.not'] = 'boolType'
+        builtins['func.texture2D'] = 'vec4'
+        builtins['func.texture'] = 'float'
+        builtins['func.textureCube'] = 'vec4'
+
+        return builtins
+
+
+
+
+
     def setConstantExpressionSpace(self, space):
         self._space = space 
     
